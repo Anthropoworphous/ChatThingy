@@ -1,0 +1,9 @@
+name: ChatThingy
+version: '${project.version}'
+main: com.github.anthropoworphous.chatthingy.ChatThingy
+api-version: 1.17
+prefix: CT
+depend: [ LuckPerms, DiscordSRV ]
+authors: [ Anthropoworphous ]
+description: It's a thingy for the chat
+website: https://github.com/anthropoworphous
