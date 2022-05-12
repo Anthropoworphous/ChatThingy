@@ -1,22 +1,50 @@
 package com.github.anthropoworphous.chatthingy.user;
 
-import org.jetbrains.annotations.NotNull;
+import com.github.anthropoworphous.chatthingy.msg.Button;
+import com.github.anthropoworphous.chatthingy.msg.Message;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface User {
+public abstract class User<T> {
+    // TODO maybe add an url for pfp
+    private final String id;
+
+    public User(String id) {
+        this.id = id;
+    }
+
+    // accept content
+    public final void accept(Message message) {
+        accept(read(message));
+    }
+    public final void accept(Exception exception) {
+        accept(error(exception));
+    }
+    public final void accept(List<Button> buttons) {
+        accept(acceptButton(buttons));
+    }
+
+    protected abstract void accept(T content);
+    protected abstract T read(Message message);
+    protected abstract T error(Exception e);
+    protected abstract T acceptButton(List<Button> buttons);
+
+    // permission
+    public abstract boolean checkPermission(String node);
+
+
+
     // user's general descriptions
-    @NotNull
-    String name();
+    public String id() { return id; }
+    public Optional<String> name() { return Optional.empty(); }
 
     // user's detail descriptions
-    default Optional<String> title() { return Optional.empty(); }
-    default Optional<String> prefix()  { return Optional.empty(); }
-    default Optional<String> postfix()  { return Optional.empty(); }
+    public Optional<String> prefix() { return Optional.empty(); }
+    public Optional<String> suffix() { return Optional.empty(); }
 
     // user's full descriptions
-    default Optional<List<String>> bio() { return Optional.empty(); }
-    default Optional<List<String>> ranks() { return Optional.empty(); }
-    default Optional<List<String>> descriptions() { return Optional.empty(); }
+    public Optional<List<String>> bio() { return Optional.empty(); }
+    public Optional<List<String>> ranks() { return Optional.empty(); }
+    public Optional<List<String>> descriptions() { return Optional.empty(); }
 }

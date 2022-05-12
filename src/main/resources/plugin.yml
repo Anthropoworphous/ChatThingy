@@ -3,7 +3,7 @@ version: '${project.version}'
 main: com.github.anthropoworphous.chatthingy.ChatThingy
 api-version: 1.17
 prefix: CT
-depend: [ LuckPerms, DiscordSRV ]
+softdepend: [ LuckPerms ]
 authors: [ Anthropoworphous ]
 description: It's a thingy for the chat
 website: https://github.com/anthropoworphous
