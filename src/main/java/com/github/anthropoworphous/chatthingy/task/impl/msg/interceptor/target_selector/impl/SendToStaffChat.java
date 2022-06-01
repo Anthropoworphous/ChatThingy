@@ -10,19 +10,13 @@ import java.util.List;
 
 @ChannelSelector.Modifier(varSize = 0)
 public class SendToStaffChat implements ChannelSelector {
-    private static final SendToStaffChat instance = new SendToStaffChat();
-
-    private SendToStaffChat() {}
-
-    public static SendToStaffChat get() { return instance; }
-
     @Override
     public Channel channel() {
-        return Staff.channel();
+        return new Staff();
     }
 
     @Override
     public void resolve(Message msg, List<IWord> var) throws Exception {
-        Staff.channel().apply(msg);
+        channel().apply(msg);
     }
 }

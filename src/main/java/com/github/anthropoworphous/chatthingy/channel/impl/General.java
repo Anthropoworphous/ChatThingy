@@ -1,26 +1,27 @@
 package com.github.anthropoworphous.chatthingy.channel.impl;
 
 import com.github.anthropoworphous.chatthingy.channel.Channel;
+import org.ini4j.Ini;
 
 import java.util.Optional;
 
-public class General implements Channel {
-    private static final Channel instance = new General();
-
-    public static Channel channel() { return instance; }
-
+public class General extends Channel {
     @Override
     public Optional<String> name() {
         return Optional.empty();
     }
 
     @Override
-    public String defaultReadPerm() { return "null"; }
-    @Override
-    public String defaultSendPerm() { return "null"; }
+    public Optional<String> prefixTrigger() {
+        return Optional.empty();
+    }
 
     @Override
-    public Optional<Character> trigger() {
-        return Optional.empty();
+    protected Ini defaultIni() {
+        Ini ini = new Ini();
+        ini.putComment("permission", "null means no permission is required");
+        ini.put("permission", "readPerm", "null");
+        ini.put("permission", "sendPerm", "null");
+        return ini;
     }
 }

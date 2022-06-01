@@ -5,7 +5,7 @@ import com.github.anthropoworphous.chatthingy.cmd.minecraft.ClickButton;
 import com.github.anthropoworphous.chatthingy.cmd.minecraft.Debug;
 import com.github.anthropoworphous.chatthingy.cmd.minecraft.ReloadConfig;
 import com.github.anthropoworphous.chatthingy.data.cache.complex.PersistentCache;
-import com.github.anthropoworphous.chatthingy.data.config.ConfigManager;
+import com.github.anthropoworphous.chatthingy.data.config.Configured;
 import com.github.anthropoworphous.chatthingy.event.external.minecraft.ConsoleSayCommand;
 import com.github.anthropoworphous.chatthingy.event.external.minecraft.InGameChat;
 import com.github.anthropoworphous.chatthingy.event.external.minecraft.PlayerJoinLeave;
@@ -29,15 +29,15 @@ public class ChatThingy extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        ConfigManager.reload();
+        Configured.reload();
 
         // the stuff that might or might not load that aren't required
         new DiscordHook().init();
         new LuckPermsHook().init();
 
         Bukkit.getPluginManager().registerEvents(InGameChat.get(), this);
-        Bukkit.getPluginManager().registerEvents(ConsoleSayCommand.get(), this);
-        Bukkit.getPluginManager().registerEvents(PlayerJoinLeave.get(), this);
+        Bukkit.getPluginManager().registerEvents(new ConsoleSayCommand(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerJoinLeave(), this);
 
         CMDRegister.registerCMD(new ClearChat(), this);
         CMDRegister.registerCMD(new ClickButton(), this);

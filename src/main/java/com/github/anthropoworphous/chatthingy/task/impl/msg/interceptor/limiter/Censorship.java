@@ -1,18 +1,17 @@
 package com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.limiter;
 
-import com.github.anthropoworphous.chatthingy.data.config.interceptor.InterceptorConfig;
+import com.github.anthropoworphous.chatthingy.data.config.Configured;
 import com.github.anthropoworphous.chatthingy.msg.Message;
 import com.github.anthropoworphous.chatthingy.msg.word.IWord;
 import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.Interceptor;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
+import org.ini4j.Ini;
 
-import java.util.Collections;
+import java.io.File;
 import java.util.List;
-import java.util.regex.MatchResult;
-import java.util.regex.Pattern;
 
-public class Censorship implements Interceptor {
+public class Censorship extends Configured implements Interceptor {
     private static final Censorship instance = new Censorship();
 
     private Censorship() {}
@@ -21,17 +20,7 @@ public class Censorship implements Interceptor {
 
     @Override
     public void intercept(Message msg) throws Exception {
-        List<String> list = InterceptorConfig.loadOr(
-                this,
-                c -> c.parse(
-                        interceptorName(),
-                        "blacklist",
-                        str -> Pattern.compile("(?:\"(\\w+)\",?)*")
-                                .matcher(str)
-                                .results()
-                                .map(MatchResult::group)
-                                .toList()
-                ), Collections.emptyList());
+        List<String> list = List.of(get("censor", "words", "").split(","));
 
         for (IWord w : msg.getContent().get()) {
             if (list.contains(w.text())) {
@@ -41,5 +30,24 @@ public class Censorship implements Interceptor {
                         .build());
             }
         }
+    }
+
+    @Override
+    protected String configFileName() {
+        return "censor-ship";
+    }
+
+    @Override
+    protected File configFolder() {
+        return new File(CONFIG_FOLDER, "interceptor");
+    }
+
+    @Override
+    protected Ini defaultIni() {
+        Ini ini = new Ini();
+        ini.putComment("censor", "no space, tech ain't that advance yet (I'm bad)");
+        // man it feels wrong to type what's in the blacklist
+        ini.put("censor", "words", "nigger,fuck,bitch");
+        return ini;
     }
 }

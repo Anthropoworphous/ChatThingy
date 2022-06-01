@@ -1,7 +1,7 @@
 package com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.target_selector;
 
-import com.github.anthropoworphous.chatthingy.msg.Message;
 import com.github.anthropoworphous.chatthingy.channel.Channel;
+import com.github.anthropoworphous.chatthingy.msg.Message;
 import com.github.anthropoworphous.chatthingy.msg.word.IWord;
 import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.Interceptor;
 
@@ -14,19 +14,11 @@ import java.util.List;
 public interface ChannelSelector extends Interceptor {
     @Override
     default void intercept(Message msg) throws Exception {
-        if (this.getClass().getAnnotation(Modifier.class) == null) { return; }
-
         int varSize = this.getClass().getAnnotation(Modifier.class).varSize();
         List<IWord> content = msg.getContent().get();
-        if (content.size() < varSize+1) { return; }
+        if (!check(content, varSize)) { return; }
 
-        String first = content.get(0).text();
-        if (first.length() != 1) { return; }
-
-        char c = first.charAt(0);
-        if (channel().trigger().isEmpty() || c != channel().trigger().get()) { return; }
-
-        //remove trigger
+        //remove prefixTrigger
         content.remove(0);
 
         List<IWord> sub = content.subList(0, varSize);
@@ -35,6 +27,14 @@ public interface ChannelSelector extends Interceptor {
 
         resolve(msg, var);
     }
+
+    private boolean check(List<IWord> content, int varSize) throws Exception {
+        if (this.getClass().getAnnotation(Modifier.class) == null) { throw new Exception("Channel not marked"); }
+        return (channel().prefixTrigger().isEmpty() || content.get(0).text().equals(channel().prefixTrigger().get()))
+                && (content.size() >= varSize + 1);
+    }
+
+
 
     Channel channel();
 

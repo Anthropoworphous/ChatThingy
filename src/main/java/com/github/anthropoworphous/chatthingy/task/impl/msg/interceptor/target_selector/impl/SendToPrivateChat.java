@@ -14,15 +14,9 @@ import java.util.Optional;
 
 @ChannelSelector.Modifier(varSize = 1)
 public class SendToPrivateChat implements ChannelSelector {
-    private static final SendToPrivateChat instance = new SendToPrivateChat();
-
-    private SendToPrivateChat() {}
-
-    public static SendToPrivateChat get() { return instance; }
-
     @Override
     public Channel channel() {
-        return Private.channel();
+        return new Private();
     }
 
     @Override
@@ -33,6 +27,6 @@ public class SendToPrivateChat implements ChannelSelector {
                 ));
         msg.readers().clear();
         msg.readers().add(new PlayerUser(p));
-        Private.channel().apply(msg);
+        channel().apply(msg);
     }
 }

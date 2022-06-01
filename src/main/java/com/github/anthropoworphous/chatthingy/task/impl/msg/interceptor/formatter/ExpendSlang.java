@@ -8,12 +8,6 @@ import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.Intercep
 import java.util.List;
 
 public class ExpendSlang implements Interceptor {
-    private static final ExpendSlang instance = new ExpendSlang();
-
-    private ExpendSlang() {}
-
-    public static ExpendSlang get() { return instance; }
-
     @Override
     public void intercept(Message msg) {
         msg.getContent().opGet().ifPresent(list -> {
@@ -25,7 +19,7 @@ public class ExpendSlang implements Interceptor {
                     case "btw" -> chainAppend(list, i, "by", "the", "way");
                     case "brb" -> chainAppend(list, i, "be", "right", "back");
                     case "fyi" -> chainAppend(list, i, "for", "your", "information");
-                    case "ffs" -> chainAppend(list, i, "for", "fuck'str", "sake");
+                    case "ffs" -> chainAppend(list, i, "for", "fuck's", "sake");
                     case "gg" -> chainAppend(list, i, "good", "game");
                     case "iirc" -> chainAppend(list, i, "if", "I", "recall", "correctly");
                     case "imo" -> chainAppend(list, i, "in", "my", "opinion");

@@ -10,12 +10,6 @@ import org.bukkit.Bukkit;
 import java.util.Optional;
 
 public class HighLightMCName implements Interceptor {
-    private static final HighLightMCName instance = new HighLightMCName();
-
-    private HighLightMCName() {}
-
-    public static HighLightMCName get() { return instance; }
-
     @Override
     public void intercept(Message msg) throws Exception {
         for (IWord w : msg.getContent().get()) {

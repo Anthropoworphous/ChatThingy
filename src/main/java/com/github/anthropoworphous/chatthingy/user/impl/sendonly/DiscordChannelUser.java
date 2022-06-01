@@ -1,4 +1,4 @@
-package com.github.anthropoworphous.chatthingy.user.impl;
+package com.github.anthropoworphous.chatthingy.user.impl.sendonly;
 
 import com.github.anthropoworphous.chatthingy.hook.DiscordHook;
 import com.github.anthropoworphous.chatthingy.msg.Button;
@@ -35,7 +35,7 @@ public class DiscordChannelUser extends User<MultipartRequest<MessageCreateReque
 
     @Override
     protected void accept(MultipartRequest<MessageCreateRequest> content) {
-        channel.getRestChannel().createMessage(content).subscribe();
+        Optional.ofNullable(channel).ifPresent(c -> c.getRestChannel().createMessage(content).subscribe());
     }
 
     @Override
@@ -53,7 +53,7 @@ public class DiscordChannelUser extends User<MultipartRequest<MessageCreateReque
 
     @Override
     public MultipartRequest<MessageCreateRequest> error(Exception e) {
-        return MessageCreateSpec.create().withContent(e.getMessage()).asRequest();
+        return MessageCreateSpec.create().withContent(e.toString()).asRequest();
     }
 
     @Override

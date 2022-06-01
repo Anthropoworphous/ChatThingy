@@ -15,13 +15,20 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import reactor.core.publisher.Mono;
 
 public class MessageEvent {
-    public static void register(GatewayDiscordClient client) {
+    public static void init(GatewayDiscordClient client) {
         client.getEventDispatcher().on(MessageCreateEvent.class, event -> {
-            new SendTask(new Message(
-                    event.getMember().map(m -> (User<Object>) new NamedEmptyUser(m.getUsername())).orElse(new EmptyUser()),
-                    event.getMessage().getContent(),
-                    new ReaderCollector(new OnlinePlayerReaders())
-            ), ExpendSlang.get(), AutoCaps.get(), SpamFilter.get()).run();
+            if (event.getMember().isEmpty() || event.getMember().get().isBot()) { return Mono.empty(); }
+            new SendTask(
+                    new Message(
+                            event.getMember()
+                                    .map(m -> (User<Object>) new NamedEmptyUser(m.getUsername()))
+                                    .orElse(new EmptyUser()),
+                            event.getMessage().getContent(),
+                            new ReaderCollector(new OnlinePlayerReaders())),
+                    new ExpendSlang(),
+                    new AutoCaps(),
+                    new SpamFilter()
+            ).run();
             return Mono.empty();
         }).subscribe();
     }

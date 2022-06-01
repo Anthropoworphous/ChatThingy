@@ -10,7 +10,7 @@ import java.util.UUID;
 public interface IElement {
     /**
      * syntactic sugar, same as:
-     * {@code <Code>new ElementProcessor.Chain(ep, IElement.?)</Code>}
+     * {@code new ElementProcessor.Chain(ep, IElement.?)}
      * @param ep The ep provided during MessageAdaptor read process
      * @return new Chain bound to the provided ElementProcessor and this element
      */
@@ -26,6 +26,6 @@ public interface IElement {
     Optional<Component> getComp(Message msg);
     Optional<String> getStr(Message msg);
 
-    Optional<String> getAsString(Message msg);
-    Optional<Component> getAsComponent(Message msg);
+    Optional<String> getAsString(Message msg, ElementProcessor ep);
+    Optional<Component> getAsComponent(Message msg, ElementProcessor ep);
 }

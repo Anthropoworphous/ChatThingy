@@ -11,7 +11,7 @@ import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.target_s
 import com.github.anthropoworphous.chatthingy.user.ReaderCollector;
 import com.github.anthropoworphous.chatthingy.user.group.OnlinePlayerReaders;
 import com.github.anthropoworphous.chatthingy.user.impl.ConsoleUser;
-import com.github.anthropoworphous.chatthingy.user.impl.DiscordChannelUser;
+import com.github.anthropoworphous.chatthingy.user.impl.sendonly.DiscordChannelUser;
 import com.github.anthropoworphous.chatthingy.user.impl.PlayerUser;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.event.EventHandler;
@@ -41,13 +41,13 @@ public class InGameChat implements Listener, Event {
                         event.message(),
                         new ReaderCollector(new OnlinePlayerReaders())
                                 .with(new ConsoleUser())
-                                .with(new DiscordChannelUser("975204773072601119"))
+                                .with(new DiscordChannelUser("970015392296742952"))
                 ),
-                SendToPrivateChat.get(),
-                SendToStaffChat.get(),
-                HighLightMCName.get(),
-                ExpendSlang.get(),
-                SpamFilter.get()
+                new SendToPrivateChat(),
+                new SendToStaffChat(),
+                new HighLightMCName(),
+                new ExpendSlang(),
+                new SpamFilter()
         ).run();
     }
 

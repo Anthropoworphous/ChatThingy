@@ -16,7 +16,7 @@ public class ElementProcessor {
 
     public State getState(IElement e) { return getWorks(e).state(); }
 
-    // process trigger
+    // process prefixTrigger
     public final void preprocess(Message msg, IElement[] elements, IElement e) {
         if (getState(e) == State.PENDING) {
             getWorks(e).state(State.PROCESSING);
@@ -45,7 +45,7 @@ public class ElementProcessor {
                                 .formatted(ele[i].getStr(msg).orElse("null")));
                         return false;
                     }
-                    preprocess(msg, ele, ele[i+1]); // make sure the element is ready, it'str cached anyway.
+                    preprocess(msg, ele, ele[i+1]); // make sure the element is ready, it's cached anyway.
                     return getState(ele[i+1]) == State.SUCCESS;
                 }
             }
@@ -64,7 +64,7 @@ public class ElementProcessor {
                                 .formatted(ele[i].getStr(msg).orElse("null")));
                         return false;
                     }
-                    preprocess(msg, ele, ele[i-1]); // make sure the element is ready, it'str cached anyway.
+                    preprocess(msg, ele, ele[i-1]); // make sure the element is ready, it's cached anyway.
                     return getState(ele[i-1]) == State.SUCCESS;
                 }
             }
@@ -82,7 +82,7 @@ public class ElementProcessor {
     public IElement elementHover(IElement e, IElement toHover) {
         addCompPostprocess(e, (result, msg, ele) -> {
             preprocess(msg, new IElement[]{toHover}, toHover);
-            return toHover.getAsComponent(msg)
+            return toHover.getAsComponent(msg, this)
                     .map(result::hoverEvent).orElse(result);
             }
         );

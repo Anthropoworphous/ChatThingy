@@ -5,12 +5,6 @@ import com.github.anthropoworphous.chatthingy.msg.word.IWord;
 import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.Interceptor;
 
 public class AutoCaps implements Interceptor {
-    private static final AutoCaps instance = new AutoCaps();
-
-    private AutoCaps() {}
-
-    public static AutoCaps get() { return instance; }
-
     @Override
     public void intercept(Message msg) {
         msg.getContent().opGet().ifPresent(list -> {

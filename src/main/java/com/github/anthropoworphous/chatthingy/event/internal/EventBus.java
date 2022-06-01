@@ -5,7 +5,6 @@ import com.github.anthropoworphous.chatthingy.data.cache.Cache;
 import com.github.anthropoworphous.chatthingy.data.cache.RandomCache;
 import com.github.anthropoworphous.chatthingy.data.cache.complex.ListCache;
 import com.github.anthropoworphous.chatthingy.task.Task;
-import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -47,11 +46,6 @@ public class EventBus {
     }
 
     public static boolean trigger(Trigger trigger) {
-        // TODO remove debug msg
-        Bukkit.getLogger().info("all triggers:");
-        bus.keySet().forEach(k -> Bukkit.getLogger().info("    " + k.trigger()));
-        Bukkit.getLogger().info("input trigger: " + trigger.trigger());
-
         Optional<Task> task = Optional.ofNullable(bus.get(trigger));
         if (task.isEmpty()) { return false; }
 

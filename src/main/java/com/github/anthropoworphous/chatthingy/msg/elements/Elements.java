@@ -132,7 +132,7 @@ public class Elements {
         };
     }
     /**
-     * @return The text that'str getting send
+     * @return The text that's getting send
      */
     public static IElement message() {
         return new Base() {

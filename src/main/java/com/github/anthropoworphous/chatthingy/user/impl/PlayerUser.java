@@ -47,7 +47,8 @@ public class PlayerUser extends User<Component> {
 
     @Override
     protected Component error(Exception e) {
-        return Component.text(e.getMessage()).color(NamedTextColor.RED);
+        e.printStackTrace();
+        return Component.text(e.toString()).color(NamedTextColor.RED);
     }
 
     @Override

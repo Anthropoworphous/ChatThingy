@@ -5,6 +5,7 @@ import com.github.anthropoworphous.chatthingy.data.cache.CacheFacade;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -24,6 +25,9 @@ public class MapCache<K, KK, VV> implements CacheFacade<K, Cache<KK, VV>> {
     }
 
     public VV getNested(K key1, KK key2) {
+        return cache.cache(key1, mapper).get(key2);
+    }
+    public VV cacheNested(K key1, KK key2, BiFunction<K, KK, VV> value) {
         return cache.cache(key1, mapper).get(key2);
     }
     public @Nullable VV removeNested(K key1, KK key2) {

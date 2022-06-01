@@ -2,38 +2,27 @@ package com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.limiter
 
 import com.github.anthropoworphous.chatthingy.data.cache.RandomCache;
 import com.github.anthropoworphous.chatthingy.data.cache.SortedCache;
-import com.github.anthropoworphous.chatthingy.data.config.interceptor.InterceptorConfig;
+import com.github.anthropoworphous.chatthingy.data.config.Configured;
 import com.github.anthropoworphous.chatthingy.msg.Message;
 import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.Interceptor;
 import com.github.anthropoworphous.chatthingy.user.User;
 import org.apache.commons.text.similarity.LevenshteinDistance;
-import org.bukkit.Bukkit;
+import org.ini4j.Ini;
 
+import java.io.File;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.Optional;
+import java.util.List;
 
-public class SpamFilter implements Interceptor {
+public class SpamFilter extends Configured implements Interceptor {
     private static final SortedCache<Instant, SendRecord> timeRecords = new SortedCache<>(100);
     private static final RandomCache<String, SendRecord> senderRecords = new RandomCache<>();
-    private static final SpamFilter instance = new SpamFilter();
-
-    private SpamFilter() {}
-
-    public static SpamFilter get() { return instance; }
 
     @Override
     public void intercept(Message msg) throws Exception {
-        if (Arrays.stream(InterceptorConfig.loadOr(
-                this,
-                c -> c.parse(interceptorName(), "bypass", str -> str.split(","))
-                , new String[]{}))
-                .noneMatch(str -> Optional.ofNullable(Bukkit.getPlayerUniqueId(str))
-                        .map(id -> id.toString().equals(msg.sender().id()))
-                        .orElse(false)
-                ))
+        if (List.of(get("limit", "bypass", "").split(","))
+                .contains(msg.sender().id()))
         {
             SendRecord newSendRecord = new SendRecord(msg);
             senderRecords.putIfAbsentOrPossibleErrorCompute(
@@ -46,7 +35,7 @@ public class SpamFilter implements Interceptor {
         }
     }
 
-    private static class SendRecord {
+    private class SendRecord {
         private int score = 100;
         private final User<?> sender;
         private String msg;
@@ -77,12 +66,7 @@ public class SpamFilter implements Interceptor {
         public void update(SendRecord sendRecord) throws Exception {
             int strDiff = Math.min(0, LevenshteinDistance.getDefaultInstance().apply(sendRecord.msg, msg) - 10);
             int timeDiff = (int) Math.min(5, sendRecord.time.until(time, ChronoUnit.SECONDS));
-            int threshold = InterceptorConfig.loadOr(
-                    SpamFilter.get(),
-                    c -> c.parse(SpamFilter.get().interceptorName(), "threshold", str -> {
-                        try { return Integer.parseInt(str); } catch(Exception e) { return null; }
-                    }),
-                    15);
+            int threshold = parse("limit", "threshold", (k1, k2) -> 15);
             int score = 2*(timeDiff^3 + 3*strDiff - threshold);
             this.score = score > 0 ? 100 : this.score + score;
 
@@ -93,5 +77,23 @@ public class SpamFilter implements Interceptor {
                 throw new Exception("You're sending messages too fast!");
             }
         }
+    }
+
+    @Override
+    protected String configFileName() {
+        return "spam-filter";
+    }
+
+    @Override
+    protected File configFolder() {
+        return new File(CONFIG_FOLDER, "interceptor");
+    }
+
+    @Override
+    protected Ini defaultIni() {
+        Ini ini = new Ini();
+
+        ini.put("limit", "threshold", "15");
+        return ini;
     }
 }

@@ -15,9 +15,7 @@ public class EmptyUser extends User<Object> {
     }
 
     @Override
-    protected void accept(Object content) {
-
-    }
+    protected void accept(Object content) { }
 
     @Override
     protected Object read(Message message) {

@@ -1,18 +1,17 @@
 package com.github.anthropoworphous.chatthingy.channel;
 
-import com.github.anthropoworphous.chatthingy.data.config.channel.ChannelConfig;
-import com.github.anthropoworphous.chatthingy.data.key.StringKey;
+import com.github.anthropoworphous.chatthingy.data.config.Configured;
 import com.github.anthropoworphous.chatthingy.msg.Message;
 
+import java.io.File;
 import java.util.Optional;
 
-public interface Channel {
-    default StringKey getKey() { return new StringKey(channelName()); }
-    default String channelName() {
+public abstract class Channel extends Configured {
+    public String channelName() {
         return getClass().getSimpleName();
     }
 
-    default void apply(Message msg) throws Exception {
+    public void apply(Message msg) throws Exception {
         msg.channel(this);
 
         if (!sendPerm().equals("null") && !msg.sender().checkPermission(sendPerm())) {
@@ -28,23 +27,24 @@ public interface Channel {
         }
     }
 
-    default String readPerm() {
-        return ChannelConfig.loadOr(
-                this,
-                c -> c.get("permission", "readPerm"),
-                defaultReadPerm());
+    public String readPerm() {
+        return get("permission", "readPerm");
     }
-    default String sendPerm() {
-        return ChannelConfig.loadOr(
-                this,
-                c -> c.get("permission", "sendPerm"),
-                defaultSendPerm());
+    public String sendPerm() {
+        return get("permission", "sendPerm");
     }
 
-    Optional<String> name();
+    @Override
+    protected String configFileName() {
+        return getClass().getSimpleName();
+    }
 
-    String defaultReadPerm();
-    String defaultSendPerm();
+    @Override
+    protected File configFolder() {
+        return new File(CONFIG_FOLDER, "channels");
+    }
 
-    Optional<Character> trigger();
+    public abstract Optional<String> name();
+
+    public abstract Optional<String> prefixTrigger();
 }

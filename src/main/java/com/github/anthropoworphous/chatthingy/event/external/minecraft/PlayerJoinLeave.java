@@ -1,48 +1,34 @@
 package com.github.anthropoworphous.chatthingy.event.external.minecraft;
 
-import com.github.anthropoworphous.chatthingy.data.config.event.EventConfig;
+import com.github.anthropoworphous.chatthingy.data.config.Configured;
 import com.github.anthropoworphous.chatthingy.event.Event;
 import com.github.anthropoworphous.chatthingy.msg.Message;
 import com.github.anthropoworphous.chatthingy.task.impl.msg.SendTask;
 import com.github.anthropoworphous.chatthingy.user.ReaderCollector;
 import com.github.anthropoworphous.chatthingy.user.group.OnlinePlayerReaders;
 import com.github.anthropoworphous.chatthingy.user.impl.EmptyUser;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
+import com.github.anthropoworphous.chatthingy.user.impl.sendonly.DiscordChannelUser;
+import com.github.anthropoworphous.chatthingy.util.ColorCodeDecoder;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.jetbrains.annotations.Nullable;
+import org.ini4j.Ini;
 
-public class PlayerJoinLeave implements Listener, Event {
-    private static final PlayerJoinLeave instance = new PlayerJoinLeave();
+import java.io.File;
 
-    private PlayerJoinLeave() {}
-
-    public static PlayerJoinLeave get() { return instance; }
-
+public class PlayerJoinLeave extends Configured implements Listener, Event {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
         event.joinMessage(null);
 
-        TextColor colorConfig = EventConfig.loadOr(
-                this,
-                c -> c.parse("color", "join-color", str -> {
-                    String[] list = str.split(",");
-                    return strToColor(list[0], list[1], list[2]);
-                }), NamedTextColor.GREEN
-        );
-
         new SendTask(new Message(
                 new EmptyUser(),
-                Component.text(EventConfig.loadOr(
-                        this, c -> c.get("text", "join-message"), "[+] <p>")
-                                .replaceAll("<p>", event.getPlayer().getName())
-                ).color(colorConfig),
+                ColorCodeDecoder.decode(get("text", "join-message", "&a[+]&r <p>")
+                        .replaceAll("<p>", event.getPlayer().getName())),
                 new ReaderCollector(new OnlinePlayerReaders())
+                        .with(new DiscordChannelUser("970015392296742952"))
         )).run();
     }
 
@@ -50,21 +36,12 @@ public class PlayerJoinLeave implements Listener, Event {
     public void onPlayerLeave(PlayerQuitEvent event) {
         event.quitMessage(null);
 
-        TextColor colorConfig = EventConfig.loadOr(
-                this,
-                c -> c.parse("color", "leave-color", str -> {
-                    String[] list = str.split(",");
-                    return strToColor(list[0], list[1], list[2]);
-                }), NamedTextColor.RED
-        );
-
         new SendTask(new Message(
                 new EmptyUser(),
-                Component.text(EventConfig.loadOr(
-                                this, c -> c.get("text", "leave-message"), "[-] <p>")
-                        .replaceAll("<p>", event.getPlayer().getName())
-                ).color(colorConfig),
+                ColorCodeDecoder.decode(get("text", "leave-message", "&c[-]&r <p>")
+                        .replaceAll("<p>", event.getPlayer().getName())),
                 new ReaderCollector(new OnlinePlayerReaders())
+                        .with(new DiscordChannelUser("970015392296742952"))
         )).run();
     }
 
@@ -73,11 +50,24 @@ public class PlayerJoinLeave implements Listener, Event {
         return "PlayerJoinLeaveEvent";
     }
 
-    private @Nullable TextColor strToColor(String str1, String str2, String str3) {
-        try {
-            return TextColor.color(Integer.parseInt(str1), Integer.parseInt(str2), Integer.parseInt(str3));
-        } catch (Exception e) {
-            return null;
-        }
+    @Override
+    protected String configFileName() {
+        return getClass().getSimpleName();
+    }
+
+    @Override
+    protected File configFolder() {
+        return new File(CONFIG_FOLDER, "event" + File.separator + "minecraft");
+    }
+
+    @Override
+    protected Ini defaultIni() {
+        Ini ini = new Ini();
+        ini.putComment("text",
+                "<p> will be replaced by name of player, " +
+                        "use color code similar to skript, hex looks like <#000000>");
+        ini.put("text", "join-message", "&a[+]&r <p>");
+        ini.put("text", "leave-message", "&c[-]&r <p>");
+        return ini;
     }
 }

@@ -15,18 +15,18 @@ public abstract class Element implements IElement {
     }
 
     @Override
-    public final Optional<String> getAsString(Message msg) {
-        if (msg.getEP().getState(this) != State.SUCCESS) {
+    public final Optional<String> getAsString(Message msg, ElementProcessor ep) {
+        if (ep.getState(this) != State.SUCCESS) {
             return Optional.empty();
         }
-        return getStr(msg).map(s -> msg.getEP().strPostprocess(s, msg, this));
+        return getStr(msg).map(s -> ep.strPostprocess(s, msg, this));
     }
 
     @Override
-    public final Optional<Component> getAsComponent(Message msg) {
-        if (msg.getEP().getState(this) != State.SUCCESS) {
+    public final Optional<Component> getAsComponent(Message msg, ElementProcessor ep) {
+        if (ep.getState(this) != State.SUCCESS) {
             return Optional.empty();
         }
-        return getComp(msg).map(c -> msg.getEP().compPostprocess(c, msg, this));
+        return getComp(msg).map(c -> ep.compPostprocess(c, msg, this));
     }
 }

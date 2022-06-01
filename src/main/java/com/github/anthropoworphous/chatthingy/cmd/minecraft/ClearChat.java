@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Only clear player'str chat
+ * Only clear player's chat
  */
 public class ClearChat implements CMD {
     @Override

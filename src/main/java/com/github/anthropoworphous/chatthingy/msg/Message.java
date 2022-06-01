@@ -2,7 +2,6 @@ package com.github.anthropoworphous.chatthingy.msg;
 
 import com.github.anthropoworphous.chatthingy.channel.Channel;
 import com.github.anthropoworphous.chatthingy.channel.impl.General;
-import com.github.anthropoworphous.chatthingy.msg.elements.ElementProcessor;
 import com.github.anthropoworphous.chatthingy.msg.word.IWord;
 import com.github.anthropoworphous.chatthingy.msg.word.extend.PureString;
 import com.github.anthropoworphous.chatthingy.msg.word.impl.ComponentWord;
@@ -19,15 +18,13 @@ import java.util.List;
 import java.util.Optional;
 
 public class Message {
-    private Channel channel = General.channel();
+    private Channel channel = new General();
     private final String originalContent;
     private final Content content;
-    private ElementProcessor ep = null; // CAN NOT be used outside of Reader.read()
     private Task task;
     private User<?> sender;
     private final List<User<?>> readers;
     private final List<Button> buttons = new ArrayList<>();
-    private final List<String> tags = new ArrayList<>();
 
     public Message(User<?> sender, @NotNull String content, List<User<?>> readers) {
         originalContent = content;
@@ -50,7 +47,7 @@ public class Message {
         this.readers = readers;
     }
     public Message(User<?> sender, @NotNull List<IWord> content, List<User<?>> readers) {
-        originalContent = content.stream().map(IWord::text).reduce("", "%1$str %2$str"::formatted);
+        originalContent = content.stream().map(IWord::text).reduce("", "%1$s %2$s"::formatted);
         this.content = new Content(new ArrayList<>(content));
         this.sender = sender;
         this.readers = readers;
@@ -66,11 +63,6 @@ public class Message {
     public Task task() {
         return task;
     }
-
-    public void assignElementProcessor(ElementProcessor ep) {
-        this.ep = ep;
-    }
-    public ElementProcessor getEP() { return ep; }
 
     public String getOriginalContent() { return originalContent; }
     public Content getContent() { return content; }
@@ -90,10 +82,6 @@ public class Message {
         buttons.add(button);
     }
     public List<Button> buttons() { return buttons; }
-
-    public void addTag(String tag) { tags.add(tag); }
-    public void removeTag(String tag) { tags.remove(tag); }
-    public boolean hasTag(String tag) { return tags.contains(tag); }
 
     public static class Content {
         private final List<IWord> content;

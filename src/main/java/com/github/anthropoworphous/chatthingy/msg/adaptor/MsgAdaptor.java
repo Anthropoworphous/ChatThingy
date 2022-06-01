@@ -14,14 +14,15 @@ import java.util.function.Function;
 public class MsgAdaptor {
     public MsgAdaptor(Message msg) {
         this.msg = msg;
-        msg.assignElementProcessor(new ElementProcessor());
+        ep = new ElementProcessor();
     }
 
     private final Message msg;
+    private final ElementProcessor ep;
 
     private IElement[] formatInit(IElement[] format) {
         for(IElement e : format) {
-            msg.getEP().preprocess(msg, format, e);
+            ep.preprocess(msg, format, e);
         }
 
         return format;
@@ -42,9 +43,9 @@ public class MsgAdaptor {
 
     public String readString(Function<ElementProcessor, IElement[]> format) {
         return compile(
-                formatInit(format.apply(msg.getEP())),
+                formatInit(format.apply(ep)),
                 new StringBuilder(),
-                e -> e.getAsString(msg),
+                e -> e.getAsString(msg, ep),
                 StringBuilder::append,
                 StringBuilder::toString
         );
@@ -52,12 +53,11 @@ public class MsgAdaptor {
 
     public Component readComponent(Function<ElementProcessor, IElement[]> format) {
         return compile(
-                formatInit(format.apply(msg.getEP())),
+                formatInit(format.apply(ep)),
                 new ArrayList<Component>(),
-                e -> e.getAsComponent(msg),
+                e -> e.getAsComponent(msg, ep),
                 ArrayList::add,
                 ComponentMerger::merge
         );
     }
-    // discord embed
 }
