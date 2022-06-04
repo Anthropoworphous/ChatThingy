@@ -1,4 +1,4 @@
-package com.github.anthropoworphous.chatthingy.user.impl.sendonly;
+package com.github.anthropoworphous.chatthingy.user.impl.readonly;
 
 import com.github.anthropoworphous.chatthingy.hook.DiscordHook;
 import com.github.anthropoworphous.chatthingy.msg.Button;
