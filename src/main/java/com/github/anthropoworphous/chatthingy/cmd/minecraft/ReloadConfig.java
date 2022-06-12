@@ -11,7 +11,7 @@ public class ReloadConfig implements CMD {
     public List<Route> routes() {
         return Routes.singleNoArg(
                 (commandSender, list) -> {
-                    Configured.reload();
+                    Configured.reloadAll();
                     return true;
                 }
         );
