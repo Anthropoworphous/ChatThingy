@@ -25,7 +25,7 @@ public class ChatThingy extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        Configured.reload();
+        Configured.reloadAll();
 
         // the stuff that might or might not load that aren't required
         new DiscordHook().init();
@@ -39,6 +39,8 @@ public class ChatThingy extends JavaPlugin {
         CMDRegister.registerCMD(new ClickButton(), this);
         CMDRegister.registerCMD(new Debug(), this);
         CMDRegister.registerCMD(new ReloadConfig(), this);
+
+        Configured.reloadAll();
     }
 
     @Override
