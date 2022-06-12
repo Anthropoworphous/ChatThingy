@@ -1,6 +1,5 @@
 package com.github.anthropoworphous.chatthingy.event.external.discord;
 
-import com.github.anthropoworphous.chatthingy.data.key.StringKey;
 import com.github.anthropoworphous.chatthingy.hook.DiscordHook;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -50,15 +49,13 @@ public class CommandProcessor implements DiscordEvent {
             void p(MessageCreateEvent event, DiscordHook hook, List<String> cmd) {
                 Optional.ofNullable(event.getMessage()
                                 .getChannel()
-                                .block(Duration.ofSeconds(10)))
-                        .ifPresentOrElse(
-                                c -> {
-                                    String id = c.getId().asString();
-                                    Bukkit.getLogger().info("id: " + id);
-                                    DiscordHook.connectedChannels().put(new StringKey(id), new DiscordHook.ChannelConfig(id));
-                                },
-                                () -> Bukkit.getLogger().info("Unable to fetch discord channel for some reason")
-                        );
+                                .block(Duration.ofSeconds(10))
+                ).ifPresentOrElse(
+                        c -> {
+                            String id = c.getId().asString();
+                            Bukkit.getLogger().info("id: " + id);
+                            hook.linkChannel(id);
+                        }, () -> Bukkit.getLogger().info("Unable to fetch discord channel for some reason"));
             }
         },
         UNLINK(0) {
@@ -66,11 +63,10 @@ public class CommandProcessor implements DiscordEvent {
             void p(MessageCreateEvent event, DiscordHook hook, List<String> cmd) {
                 Optional.ofNullable(event.getMessage()
                                 .getChannel()
-                                .block(Duration.ofSeconds(10)))
-                        .ifPresentOrElse(
-                                c -> DiscordHook.connectedChannels().remove(new StringKey(c.getId().asString())),
-                                () -> Bukkit.getLogger().info("Unable to fetch discord channel for some reason")
-                        );
+                                .block(Duration.ofSeconds(10))
+                ).ifPresentOrElse(
+                        c -> hook.unlinkChannel(c.getId().asString()),
+                        () -> Bukkit.getLogger().info("Unable to fetch discord channel for some reason"));
             }
         };
 
