@@ -16,16 +16,17 @@ import java.io.File;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 public class DiscordHook extends Configured implements Hook {
-    private final PersistentCache<StringKey, ChannelConfig> connectedChannels = new PersistentCache<>(
-            "ConnectedDiscordChannels", ConcurrentCache::new
-    );
     private final Supplier<String> commandPrefix = () -> get("command", "prefix");
 
+    private static final PersistentCache<StringKey, ChannelConfig> connectedChannels = new PersistentCache<>(
+            "ConnectedDiscordChannels", ConcurrentCache::new
+    );
     private static Instant up = null; // for uptime
     private static GatewayDiscordClient client = null;
 
@@ -60,15 +61,14 @@ public class DiscordHook extends Configured implements Hook {
 
     // resource getter
     public String commandPrefix() { return commandPrefix.get(); }
-    public PersistentCache<StringKey, ChannelConfig> connectedChannels() {
-        return connectedChannels;
-    }
 
     // resource getter - static
+    public static PersistentCache<StringKey, ChannelConfig> connectedChannels() {
+        return connectedChannels;
+    }
     public static Optional<GatewayDiscordClient> client() {
         return Optional.ofNullable(client);
     }
-
     public static String upTime() {
         if (up != null) {
             long seconds = up.until(new Date().toInstant(), ChronoUnit.SECONDS);
@@ -105,6 +105,11 @@ public class DiscordHook extends Configured implements Hook {
         public ChannelConfig(String channelId) {
             id = channelId;
         }
+
+        public boolean checkPerm(String node) {
+            return Arrays.asList(get("data", "permission").split(",")).contains(node);
+        }
+        public String messagePrefix() { return get("data", "message prefix"); }
 
         @Override
         protected String configFileName() {

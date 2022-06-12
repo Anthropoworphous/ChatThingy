@@ -1,5 +1,6 @@
 package com.github.anthropoworphous.chatthingy.user.impl.readonly;
 
+import com.github.anthropoworphous.chatthingy.data.key.StringKey;
 import com.github.anthropoworphous.chatthingy.hook.DiscordHook;
 import com.github.anthropoworphous.chatthingy.msg.Button;
 import com.github.anthropoworphous.chatthingy.msg.Message;
@@ -71,7 +72,8 @@ public class DiscordChannelUser extends User<MultipartRequest<MessageCreateReque
 
     @Override
     public boolean checkPermission(String node) {
-        // TODO implement, prob use config
-        return false;
+        return Optional.ofNullable(DiscordHook.connectedChannels().get(new StringKey(id())))
+                .map(conf -> conf.checkPerm(node))
+                .orElse(false);
     }
 }

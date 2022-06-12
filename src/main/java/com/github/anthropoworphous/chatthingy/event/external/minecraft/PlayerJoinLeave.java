@@ -5,9 +5,9 @@ import com.github.anthropoworphous.chatthingy.event.Event;
 import com.github.anthropoworphous.chatthingy.msg.Message;
 import com.github.anthropoworphous.chatthingy.task.impl.msg.SendTask;
 import com.github.anthropoworphous.chatthingy.user.ReaderCollector;
+import com.github.anthropoworphous.chatthingy.user.group.LinkedDiscordChannels;
 import com.github.anthropoworphous.chatthingy.user.group.OnlinePlayerReaders;
 import com.github.anthropoworphous.chatthingy.user.impl.EmptyUser;
-import com.github.anthropoworphous.chatthingy.user.impl.readonly.DiscordChannelUser;
 import com.github.anthropoworphous.chatthingy.util.ColorCodeDecoder;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -28,7 +28,7 @@ public class PlayerJoinLeave extends Configured implements Listener, Event {
                 ColorCodeDecoder.decode(get("text", "join-message")
                         .replaceAll("<p>", event.getPlayer().getName())),
                 new ReaderCollector(new OnlinePlayerReaders())
-                        .with(new DiscordChannelUser("970015392296742952"))
+                        .withAllOf(new LinkedDiscordChannels())
         )).run();
     }
 
@@ -41,7 +41,7 @@ public class PlayerJoinLeave extends Configured implements Listener, Event {
                 ColorCodeDecoder.decode(get("text", "leave-message")
                         .replaceAll("<p>", event.getPlayer().getName())),
                 new ReaderCollector(new OnlinePlayerReaders())
-                        .with(new DiscordChannelUser("970015392296742952"))
+                        .withAllOf(new LinkedDiscordChannels())
         )).run();
     }
 

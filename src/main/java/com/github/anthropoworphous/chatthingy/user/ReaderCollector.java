@@ -12,6 +12,10 @@ public class ReaderCollector extends ArrayList<User<?>> {
         super(readers);
     }
 
+    public ReaderCollector withAllOf(List<? extends User<?>> user) {
+        this.addAll(user);
+        return this;
+    }
     public ReaderCollector with(User<?> user) {
         this.add(user);
         return this;

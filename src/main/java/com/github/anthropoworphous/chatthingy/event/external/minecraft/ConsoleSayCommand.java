@@ -7,9 +7,9 @@ import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.target_s
 import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.target_selector.impl.SendToStaffChat;
 import com.github.anthropoworphous.chatthingy.user.ReaderCollector;
 import com.github.anthropoworphous.chatthingy.user.User;
+import com.github.anthropoworphous.chatthingy.user.group.LinkedDiscordChannels;
 import com.github.anthropoworphous.chatthingy.user.group.OnlinePlayerReaders;
 import com.github.anthropoworphous.chatthingy.user.impl.ConsoleUser;
-import com.github.anthropoworphous.chatthingy.user.impl.readonly.DiscordChannelUser;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.ServerCommandEvent;
@@ -28,7 +28,7 @@ public class ConsoleSayCommand implements Listener, Event {
                         event.getCommand().substring(4), // skip the "/say "
                         new ReaderCollector(new OnlinePlayerReaders())
                                 .with(consoleUser)
-                                .with(new DiscordChannelUser("970015392296742952"))
+                                .withAllOf(new LinkedDiscordChannels())
                 ),
                 new SendToPrivateChat(),
                 new SendToStaffChat()

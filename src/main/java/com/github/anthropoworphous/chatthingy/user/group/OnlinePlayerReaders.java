@@ -8,11 +8,11 @@ import java.util.ArrayList;
 
 public class OnlinePlayerReaders extends ArrayList<PlayerUser> {
     public OnlinePlayerReaders() {
-        this.addAll(Bukkit.getOnlinePlayers().stream().map(PlayerUser::new).toList());
+        super(Bukkit.getOnlinePlayers().stream().map(PlayerUser::new).toList());
     }
 
     @Override
-    public User[] toArray() {
+    public User<?>[] toArray() {
         return this.toArray(PlayerUser[]::new);
     }
 }

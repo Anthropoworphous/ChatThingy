@@ -55,7 +55,7 @@ public class CommandProcessor implements DiscordEvent {
                                 c -> {
                                     String id = c.getId().asString();
                                     Bukkit.getLogger().info("id: " + id);
-                                    hook.connectedChannels().put(new StringKey(id), new DiscordHook.ChannelConfig(id));
+                                    DiscordHook.connectedChannels().put(new StringKey(id), new DiscordHook.ChannelConfig(id));
                                 },
                                 () -> Bukkit.getLogger().info("Unable to fetch discord channel for some reason")
                         );
@@ -68,7 +68,7 @@ public class CommandProcessor implements DiscordEvent {
                                 .getChannel()
                                 .block(Duration.ofSeconds(10)))
                         .ifPresentOrElse(
-                                c -> hook.connectedChannels().remove(new StringKey(c.getId().asString())),
+                                c -> DiscordHook.connectedChannels().remove(new StringKey(c.getId().asString())),
                                 () -> Bukkit.getLogger().info("Unable to fetch discord channel for some reason")
                         );
             }

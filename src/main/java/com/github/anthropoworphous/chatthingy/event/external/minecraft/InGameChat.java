@@ -9,9 +9,9 @@ import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.minecraf
 import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.target_selector.impl.SendToPrivateChat;
 import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.target_selector.impl.SendToStaffChat;
 import com.github.anthropoworphous.chatthingy.user.ReaderCollector;
+import com.github.anthropoworphous.chatthingy.user.group.LinkedDiscordChannels;
 import com.github.anthropoworphous.chatthingy.user.group.OnlinePlayerReaders;
 import com.github.anthropoworphous.chatthingy.user.impl.ConsoleUser;
-import com.github.anthropoworphous.chatthingy.user.impl.readonly.DiscordChannelUser;
 import com.github.anthropoworphous.chatthingy.user.impl.PlayerUser;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.event.EventHandler;
@@ -41,7 +41,7 @@ public class InGameChat implements Listener, Event {
                         event.message(),
                         new ReaderCollector(new OnlinePlayerReaders())
                                 .with(new ConsoleUser())
-                                .with(new DiscordChannelUser("970015392296742952"))
+                                .withAllOf(new LinkedDiscordChannels())
                 ),
                 new SendToPrivateChat(),
                 new SendToStaffChat(),
