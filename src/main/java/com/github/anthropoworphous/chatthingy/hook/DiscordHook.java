@@ -114,6 +114,7 @@ public class DiscordHook extends Configured implements Hook {
         private final String id;
         public ChannelConfig(@NotNull String channelId) {
             id = channelId;
+            reload();
         }
 
         public boolean checkPerm(String node) {

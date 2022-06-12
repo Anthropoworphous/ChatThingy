@@ -36,7 +36,7 @@ public abstract class Configured {
     }
 
     // other
-    public Configured reload() {
+    public void reload() {
         File file = new File(configFolder(), configFileName()+".ini");
         try {
             config = new Ini(file);
@@ -51,7 +51,6 @@ public abstract class Configured {
                 ex.printStackTrace();
             }
         }
-        return this;
     }
 
     protected abstract String configFileName();
