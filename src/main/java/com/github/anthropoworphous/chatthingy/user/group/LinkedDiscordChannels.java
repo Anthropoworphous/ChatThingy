@@ -7,6 +7,6 @@ import java.util.ArrayList;
 
 public class LinkedDiscordChannels extends ArrayList<DiscordChannelUser> {
     public LinkedDiscordChannels() {
-        super(DiscordHook.connectedChannels().keySet().stream().map(k -> new DiscordChannelUser(k.str())).toList());
+        super(DiscordHook.linkedChannels().stream().map(k -> new DiscordChannelUser(k.str())).toList());
     }
 }
