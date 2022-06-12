@@ -23,7 +23,6 @@ public abstract class Configured {
 
     protected Configured() {
         configuredStuff.add(this);
-        reload(this);
     }
 
     // get value
@@ -36,29 +35,32 @@ public abstract class Configured {
         return (T) cache.cacheNested(section, key, mapper::apply);
     }
 
+    // other
+    public Configured reload() {
+        File file = new File(configFolder(), configFileName()+".ini");
+        try {
+            config = new Ini(file);
+        } catch (IOException e) {
+            //noinspection ResultOfMethodCallIgnored
+            file.getParentFile().mkdirs();
+            try {
+                config = defaultIni();
+                config.store(file);
+                Bukkit.getLogger().info("Config file created at: %s".formatted(file.getAbsolutePath()));
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return this;
+    }
+
     protected abstract String configFileName();
     protected abstract File configFolder();
     protected abstract Ini defaultIni();
 
 
 
-    public static void reload() {
+    public static void reloadAll() {
         configuredStuff.forEach(Configured::reload);
-    }
-    public static void reload(Configured configured) {
-        File file = new File(configured.configFolder(), configured.configFileName()+".ini");
-        try {
-            configured.config = new Ini(file);
-        } catch (IOException e) {
-            //noinspection ResultOfMethodCallIgnored
-            file.getParentFile().mkdirs();
-            try {
-                configured.config = configured.defaultIni();
-                configured.config.store(file);
-                Bukkit.getLogger().info("Config file created at: %s".formatted(file.getAbsolutePath()));
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
     }
 }
