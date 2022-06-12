@@ -1,19 +1,27 @@
 package com.github.anthropoworphous.chatthingy.event.external.discord;
 
+import com.github.anthropoworphous.chatthingy.data.key.StringKey;
 import com.github.anthropoworphous.chatthingy.hook.DiscordHook;
 import com.github.anthropoworphous.chatthingy.msg.Message;
 import com.github.anthropoworphous.chatthingy.task.impl.msg.SendTask;
 import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.formatter.AutoCaps;
 import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.formatter.ExpendSlang;
 import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.limiter.SpamFilter;
+import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.target_selector.impl.SendToPrivateChat;
+import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.target_selector.impl.SendToStaffChat;
 import com.github.anthropoworphous.chatthingy.user.ReaderCollector;
 import com.github.anthropoworphous.chatthingy.user.User;
-import com.github.anthropoworphous.chatthingy.user.extend.NamedEmptyUser;
 import com.github.anthropoworphous.chatthingy.user.group.OnlinePlayerReaders;
+import com.github.anthropoworphous.chatthingy.user.impl.ConsoleUser;
 import com.github.anthropoworphous.chatthingy.user.impl.EmptyUser;
+import com.github.anthropoworphous.chatthingy.user.impl.sendonly.DiscordMemberUser;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.channel.MessageChannel;
 import reactor.core.publisher.Mono;
+
+import java.time.Duration;
+import java.util.Optional;
 
 public class MessageEvent implements DiscordEvent {
     private final DiscordHook hookInstance;
@@ -27,6 +35,7 @@ public class MessageEvent implements DiscordEvent {
             // stop processing if the user isn't a normal discord user
             if (event.getMember().isEmpty() || event.getMember().get().isBot()) { return Mono.empty(); }
 
+            // checking if the message starts with the command prefix, and if it does, it will run the command.
             if (event.getMessage().getContent().startsWith(hookInstance.commandPrefix() + " ")) {
                 return event.getMessage()
                         .getChannel()
@@ -40,13 +49,22 @@ public class MessageEvent implements DiscordEvent {
                         ));
             }
 
+            MessageChannel channel = event.getMessage().getChannel().block(Duration.ofSeconds(10));
+            if (channel == null || !DiscordHook.linkedChannels().contains(new StringKey(channel.getId().asString()))) {
+                return Mono.empty();
+            }
+            DiscordHook.ChannelConfig config = DiscordHook.configOfChannel(channel.getId().toString());
+            String prefix = Optional.ofNullable(config).map(DiscordHook.ChannelConfig::messagePrefix).orElse("");
             new SendTask(
                     new Message(
                             event.getMember()
-                                    .map(m -> (User<Object>) new NamedEmptyUser(m.getUsername()))
+                                    .map(m -> (User<Object>) new DiscordMemberUser(channel, m))
                                     .orElse(new EmptyUser()),
-                            event.getMessage().getContent(),
-                            new ReaderCollector(new OnlinePlayerReaders())),
+                            "%s %s".formatted(prefix, event.getMessage().getContent()),
+                            new ReaderCollector(new OnlinePlayerReaders())
+                                    .with(new ConsoleUser())),
+                    new SendToPrivateChat(),
+                    new SendToStaffChat(),
                     new ExpendSlang(),
                     new AutoCaps(),
                     new SpamFilter()
