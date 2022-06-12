@@ -11,7 +11,9 @@ import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
 import org.bukkit.Bukkit;
 import org.ini4j.Ini;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.Serializable;
 import java.time.Instant;
@@ -19,6 +21,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 
 public class DiscordHook extends Configured implements Hook {
@@ -59,16 +62,23 @@ public class DiscordHook extends Configured implements Hook {
         }
     }
 
-    // resource getter
-    public String commandPrefix() { return commandPrefix.get(); }
-
-    // resource getter - static
-    public static PersistentCache<StringKey, ChannelConfig> connectedChannels() {
+    // resource getter and setter
+    public PersistentCache<StringKey, ChannelConfig> connectedChannels() {
         return connectedChannels;
     }
-    public static Optional<GatewayDiscordClient> client() {
-        return Optional.ofNullable(client);
+    public String commandPrefix() { return commandPrefix.get(); }
+    public void linkChannel(String id) {
+        var config = new ChannelConfig(id);
+        connectedChannels().put(new StringKey(id), config);
     }
+    public void unlinkChannel(String id) {
+        connectedChannels().remove(new StringKey(id));
+    }
+
+    // resource getter - static
+    public static Optional<GatewayDiscordClient> client() { return Optional.ofNullable(client); }
+    public static Set<StringKey> linkedChannels() { return connectedChannels.keySet(); }
+    public static @Nullable ChannelConfig configOfChannel(String id) { return connectedChannels.get(new StringKey(id)); }
     public static String upTime() {
         if (up != null) {
             long seconds = up.until(new Date().toInstant(), ChronoUnit.SECONDS);
@@ -102,7 +112,7 @@ public class DiscordHook extends Configured implements Hook {
     // individual channel config
     public static class ChannelConfig extends Configured implements Serializable {
         private final String id;
-        public ChannelConfig(String channelId) {
+        public ChannelConfig(@NotNull String channelId) {
             id = channelId;
         }
 
@@ -118,7 +128,7 @@ public class DiscordHook extends Configured implements Hook {
 
         @Override
         protected File configFolder() {
-            return new File(CONFIG_FOLDER, "hooks%1$schannels%1$s%2$s".formatted(File.separator, id));
+            return new File(CONFIG_FOLDER, "hooks%schannels".formatted(File.separator));
         }
 
         @Override
