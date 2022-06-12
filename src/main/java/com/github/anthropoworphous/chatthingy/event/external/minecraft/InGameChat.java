@@ -11,7 +11,7 @@ import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.target_s
 import com.github.anthropoworphous.chatthingy.user.ReaderCollector;
 import com.github.anthropoworphous.chatthingy.user.group.OnlinePlayerReaders;
 import com.github.anthropoworphous.chatthingy.user.impl.ConsoleUser;
-import com.github.anthropoworphous.chatthingy.user.impl.sendonly.DiscordChannelUser;
+import com.github.anthropoworphous.chatthingy.user.impl.readonly.DiscordChannelUser;
 import com.github.anthropoworphous.chatthingy.user.impl.PlayerUser;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.event.EventHandler;

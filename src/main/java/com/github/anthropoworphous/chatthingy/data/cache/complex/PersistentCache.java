@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.function.Supplier;
 
 public class PersistentCache<K extends Serializable, V extends Serializable> implements CacheFacade<K, V> {
+    // TODO handle unsafe deserialization issue
     private static final Set<PersistentCache<?, ?>> allPermCache = new HashSet<>();
     private static final Path SAVE_LOCATION = getDataFolder();
 

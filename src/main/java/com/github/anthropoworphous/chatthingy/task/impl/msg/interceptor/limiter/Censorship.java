@@ -20,7 +20,7 @@ public class Censorship extends Configured implements Interceptor {
 
     @Override
     public void intercept(Message msg) throws Exception {
-        List<String> list = List.of(get("censor", "words", "").split(","));
+        List<String> list = List.of(get("censor", "words").split(","));
 
         for (IWord w : msg.getContent().get()) {
             if (list.contains(w.text())) {

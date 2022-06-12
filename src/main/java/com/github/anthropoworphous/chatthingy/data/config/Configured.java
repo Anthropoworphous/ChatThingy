@@ -26,14 +26,11 @@ public abstract class Configured {
         reload(this);
     }
 
+    // get value
     protected String get(String section, String key) {
         return config.get(section, key);
     }
-    protected String get(String section, String key, String defaultValue) {
-        String value = config.get(section, key);
-        if (value == null) { config.put(section, key, defaultValue); return defaultValue; }
-        return value;
-    }
+
     @SuppressWarnings("unchecked")
     public <T> T parse(String section, String key, BiFunction<String, String, T> mapper) {
         return (T) cache.cacheNested(section, key, mapper::apply);

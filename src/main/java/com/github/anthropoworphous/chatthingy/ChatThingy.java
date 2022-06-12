@@ -21,11 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * reinventing the wheel at its finest
  */
 public class ChatThingy extends JavaPlugin {
-    // TODO try to eliminate some reverse reference
-    // like in message and relay
-
     public static Plugin plugin() { return ChatThingy.getPlugin(ChatThingy.class); }
-
 
     @Override
     public void onEnable() {

@@ -35,7 +35,7 @@ public interface ChannelSelector extends Interceptor {
     }
 
 
-
+    // abstract
     Channel channel();
 
     void resolve(Message msg, List<IWord> var) throws Exception;

@@ -21,7 +21,7 @@ public class SpamFilter extends Configured implements Interceptor {
 
     @Override
     public void intercept(Message msg) throws Exception {
-        if (List.of(get("limit", "bypass", "").split(","))
+        if (List.of(get("limit", "bypass").split(","))
                 .contains(msg.sender().id()))
         {
             SendRecord newSendRecord = new SendRecord(msg);

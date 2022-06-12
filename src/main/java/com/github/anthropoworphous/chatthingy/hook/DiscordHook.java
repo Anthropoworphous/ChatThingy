@@ -1,7 +1,11 @@
 package com.github.anthropoworphous.chatthingy.hook;
 
+import com.github.anthropoworphous.chatthingy.data.cache.ConcurrentCache;
+import com.github.anthropoworphous.chatthingy.data.cache.complex.PersistentCache;
 import com.github.anthropoworphous.chatthingy.data.config.Configured;
+import com.github.anthropoworphous.chatthingy.data.key.StringKey;
 import com.github.anthropoworphous.chatthingy.event.external.discord.ButtonPressedEvent;
+import com.github.anthropoworphous.chatthingy.event.external.discord.CommandProcessor;
 import com.github.anthropoworphous.chatthingy.event.external.discord.MessageEvent;
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
@@ -9,13 +13,20 @@ import org.bukkit.Bukkit;
 import org.ini4j.Ini;
 
 import java.io.File;
+import java.io.Serializable;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class DiscordHook extends Configured implements Hook {
-    private static Instant up = null;
+    private final PersistentCache<StringKey, ChannelConfig> connectedChannels = new PersistentCache<>(
+            "ConnectedDiscordChannels", ConcurrentCache::new
+    );
+    private final Supplier<String> commandPrefix = () -> get("command", "prefix");
+
+    private static Instant up = null; // for uptime
     private static GatewayDiscordClient client = null;
 
     @Override
@@ -25,20 +36,22 @@ public class DiscordHook extends Configured implements Hook {
 
     @Override
     public void init() {
-        String strToken = get("connection",
-                "token",
-                "0000000000000000000000000000000000000000000000000000000000000000000000");
-        if (strToken.equals("0000000000000000000000000000000000000000000000000000000000000000000000")) {
+        String strToken = get("connection", "token");
+        if (strToken.equals("0".repeat(70))) {
+            Bukkit.getLogger().info("You can set the token in %s to connect to discord channel through a bot"
+                    .formatted(configFolder().getAbsolutePath()));
             return;
         }
 
+        // try to connect to discord.
         try {
             DiscordClient.create(strToken).login().doOnSuccess(client -> {
+                // Setting the uptime, setting the client, and initializing the events.
                 up = new Date().toInstant();
-
                 DiscordHook.client = client;
-                MessageEvent.init(client);
-                ButtonPressedEvent.init(client);
+                new CommandProcessor().init(client);
+                new MessageEvent(this).init(client);
+                new ButtonPressedEvent().init(client);
             }).subscribe();
         } catch(Exception e) {
             Bukkit.getLogger().info("Failed to connect to discord: %s".formatted(e.getMessage()));
@@ -46,6 +59,12 @@ public class DiscordHook extends Configured implements Hook {
     }
 
     // resource getter
+    public String commandPrefix() { return commandPrefix.get(); }
+    public PersistentCache<StringKey, ChannelConfig> connectedChannels() {
+        return connectedChannels;
+    }
+
+    // resource getter - static
     public static Optional<GatewayDiscordClient> client() {
         return Optional.ofNullable(client);
     }
@@ -61,6 +80,7 @@ public class DiscordHook extends Configured implements Hook {
         return "Not up yet";
     }
 
+    // configuration
     @Override
     protected String configFileName() {
         return "discord";
@@ -74,8 +94,36 @@ public class DiscordHook extends Configured implements Hook {
     @Override
     protected Ini defaultIni() {
         Ini ini = new Ini();
-        ini.put("connection", "token",
-                "0000000000000000000000000000000000000000000000000000000000000000000000");
+        ini.put("command", "prefix", "ct");
+        ini.put("connection", "token", "0".repeat(70));
         return ini;
+    }
+
+    // individual channel config
+    public static class ChannelConfig extends Configured implements Serializable {
+        private final String id;
+        public ChannelConfig(String channelId) {
+            id = channelId;
+        }
+
+        @Override
+        protected String configFileName() {
+            return id;
+        }
+
+        @Override
+        protected File configFolder() {
+            return new File(CONFIG_FOLDER, "hooks%1$schannels%1$s%2$s".formatted(File.separator, id));
+        }
+
+        @Override
+        protected Ini defaultIni() {
+            Ini ini = new Ini();
+            ini.putComment("data", "permission: separate permissions with \",\", this is the permission this channel will have");
+            ini.putComment("data", "message prefix: this will get added before the message");
+            ini.put("data", "permission", "example.perm_1,example.perm_2");
+            ini.put("data", "message prefix", "");
+            return ini;
+        }
     }
 }

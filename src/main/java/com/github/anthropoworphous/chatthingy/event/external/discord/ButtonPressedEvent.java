@@ -5,8 +5,9 @@ import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import reactor.core.publisher.Mono;
 
-public class ButtonPressedEvent {
-    public static void init(GatewayDiscordClient client) {
+public class ButtonPressedEvent implements DiscordEvent {
+    @Override
+    public void init(GatewayDiscordClient client) {
         client.getEventDispatcher().on(ButtonInteractionEvent.class, event -> {
             if (!EventBus.exist(event.getCustomId())) {
                 return event.createFollowup("Button timed out");

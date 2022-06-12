@@ -9,7 +9,7 @@ import com.github.anthropoworphous.chatthingy.user.ReaderCollector;
 import com.github.anthropoworphous.chatthingy.user.User;
 import com.github.anthropoworphous.chatthingy.user.group.OnlinePlayerReaders;
 import com.github.anthropoworphous.chatthingy.user.impl.ConsoleUser;
-import com.github.anthropoworphous.chatthingy.user.impl.sendonly.DiscordChannelUser;
+import com.github.anthropoworphous.chatthingy.user.impl.readonly.DiscordChannelUser;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.ServerCommandEvent;
