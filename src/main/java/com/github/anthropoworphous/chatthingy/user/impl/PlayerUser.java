@@ -1,10 +1,10 @@
 package com.github.anthropoworphous.chatthingy.user.impl;
 
 import com.github.anthropoworphous.chatthingy.msg.Button;
-import com.github.anthropoworphous.chatthingy.msg.Message;
-import com.github.anthropoworphous.chatthingy.msg.adaptor.MsgAdaptor;
+import com.github.anthropoworphous.chatthingy.msg.adaptor.MessageAdaptor;
 import com.github.anthropoworphous.chatthingy.msg.elements.Elements;
 import com.github.anthropoworphous.chatthingy.msg.elements.IElement;
+import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
 import com.github.anthropoworphous.chatthingy.user.User;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -31,8 +31,8 @@ public class PlayerUser extends User<Component> {
     }
 
     @Override
-    protected Component read(Message message) {
-        return new MsgAdaptor(message).readComponent(ep -> new IElement[] {
+    protected Component read(IMessage message) {
+        return new MessageAdaptor(message).readComponent(ep -> new IElement[] {
                 ep.lookAhead(Elements.openBracket()),
                 Elements.channelName(),
                 ep.lookBehind(Elements.closeBracket()),

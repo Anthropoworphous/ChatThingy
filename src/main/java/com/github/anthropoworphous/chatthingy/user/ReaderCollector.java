@@ -13,11 +13,11 @@ public class ReaderCollector extends ArrayList<User<?>> {
     }
 
     public ReaderCollector withAllOf(List<? extends User<?>> user) {
-        this.addAll(user);
+        addAll(user);
         return this;
     }
     public ReaderCollector with(User<?> user) {
-        this.add(user);
+        add(user);
         return this;
     }
 }

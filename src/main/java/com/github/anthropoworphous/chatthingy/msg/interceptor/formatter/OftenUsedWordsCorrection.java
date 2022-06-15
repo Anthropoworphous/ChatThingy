@@ -1,4 +1,4 @@
-package com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.formatter;
+package com.github.anthropoworphous.chatthingy.msg.interceptor.formatter;
 
 import com.github.anthropoworphous.chatthingy.data.cache.Cache;
 import com.github.anthropoworphous.chatthingy.data.cache.RandomCache;
@@ -11,13 +11,14 @@ import com.github.anthropoworphous.chatthingy.event.internal.AsyncEvent;
 import com.github.anthropoworphous.chatthingy.event.internal.EventBus;
 import com.github.anthropoworphous.chatthingy.event.internal.Trigger;
 import com.github.anthropoworphous.chatthingy.msg.Button;
-import com.github.anthropoworphous.chatthingy.msg.Message;
+import com.github.anthropoworphous.chatthingy.msg.interceptor.HaltMessage;
+import com.github.anthropoworphous.chatthingy.msg.interceptor.Interceptor;
+import com.github.anthropoworphous.chatthingy.msg.interceptor.contant.AddButton;
+import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
+import com.github.anthropoworphous.chatthingy.msg.message.Message;
 import com.github.anthropoworphous.chatthingy.msg.word.IWord;
+import com.github.anthropoworphous.chatthingy.task.SendTask;
 import com.github.anthropoworphous.chatthingy.task.Task;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.SendTask;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.HaltMessage;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.Interceptor;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.contant.AddButton;
 import com.github.anthropoworphous.chatthingy.user.ReaderCollector;
 import com.github.anthropoworphous.chatthingy.user.impl.EmptyUser;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -41,7 +42,7 @@ public class OftenUsedWordsCorrection implements Interceptor {
     );
 
     @Override
-    public void intercept(Message msg) throws Exception {
+    public void intercept(IMessage msg) throws Exception {
         Map<String, String> replacement = new HashMap<>();
         for (IWord w : msg.getContent().get()) {
             String str = w.text().toLowerCase();
@@ -127,22 +128,21 @@ public class OftenUsedWordsCorrection implements Interceptor {
         }
     }
 
-    private static SendTask haltForCorrection(Message msg, Map<String, String> replacement) {
+    private static Task haltForCorrection(IMessage msg, Map<String, String> replacement) {
         AsyncEvent e1 = new AsyncEvent() {
             @Override
             public Task task() {
-                return new SendTask(
-                        new Message(
-                                msg.sender(),
-                                msg.getOriginalContent(),
-                                new ReaderCollector(msg.readers())
-                        ),
-                        Stream.concat(
-                                Arrays.stream(((SendTask) msg.task()).interceptors())
-                                        .filter(i -> !(i instanceof OftenUsedWordsCorrection)),
-                                Stream.of(new ReplaceWord(replacement)))
-                                .toArray(Interceptor[]::new)
-                );
+                return new Message.Builder()
+                        .sendBy(msg.sender())
+                        .content(msg.getContent().original())
+                        .readBy(msg.readers())
+                        .interceptors(
+                                Stream.concat(
+                                        Arrays.stream(((SendTask) msg.task()).interceptors())
+                                                .filter(i -> !(i instanceof OftenUsedWordsCorrection)),
+                                        Stream.of(new ReplaceWord(replacement))
+                                ).toArray(Interceptor[]::new))
+                        .build().task();
             }
 
             @Override
@@ -162,16 +162,14 @@ public class OftenUsedWordsCorrection implements Interceptor {
         AsyncEvent e2 = new AsyncEvent() {
             @Override
             public Task task() {
-                return new SendTask(
-                        new Message(
-                                msg.sender(),
-                                msg.getOriginalContent(),
-                                new ReaderCollector(msg.readers())
-                        ),
-                        Arrays.stream(((SendTask) msg.task()).interceptors())
+                return new Message.Builder()
+                        .sendBy(msg.sender())
+                        .content(msg.getContent().original())
+                        .readBy(msg.readers())
+                        .interceptors(Arrays.stream(((SendTask) msg.task()).interceptors())
                                 .filter(i -> !(i instanceof OftenUsedWordsCorrection))
-                                .toArray(Interceptor[]::new)
-                );
+                                .toArray(Interceptor[]::new))
+                        .build().task();
             }
 
             @Override
@@ -197,21 +195,21 @@ public class OftenUsedWordsCorrection implements Interceptor {
         EventBus.add(e1, 30000);
         EventBus.add(e2, 30000);
 
-        return new SendTask(new Message(
-                new EmptyUser(),
-                replacement.entrySet().stream()
+        return new Message.Builder()
+                .sendBy(new EmptyUser())
+                .content(replacement.entrySet().stream()
                         .collect(StringBuilder::new,
                                 (sb, entry) -> sb.append(entry.getKey())
                                         .append(" -> ")
                                         .append(entry.getValue())
                                         .append(", "),
                                 (sb1, sb2) -> sb1.append(sb2.toString())
-                        ).toString(),
-                new ReaderCollector(msg.sender())
-        ), new AddButton(
-                new Button("Accept", e1.trigger(), NamedTextColor.GREEN),
-                new Button("Ignore", e2.trigger(), NamedTextColor.RED)
-        ));
+                        ).toString())
+                .readBy(new ReaderCollector(msg.sender()))
+                .interceptors(new AddButton(
+                        new Button("Accept", e1.trigger(), NamedTextColor.GREEN),
+                        new Button("Ignore", e2.trigger(), NamedTextColor.RED)
+                )).build().task();
     }
 
     private String soundexOf(String str) {

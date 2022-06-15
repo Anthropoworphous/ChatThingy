@@ -1,9 +1,9 @@
-package com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.target_selector;
+package com.github.anthropoworphous.chatthingy.msg.interceptor.target_selector;
 
 import com.github.anthropoworphous.chatthingy.channel.Channel;
-import com.github.anthropoworphous.chatthingy.msg.Message;
+import com.github.anthropoworphous.chatthingy.msg.interceptor.Interceptor;
+import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
 import com.github.anthropoworphous.chatthingy.msg.word.IWord;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.Interceptor;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface ChannelSelector extends Interceptor {
     @Override
-    default void intercept(Message msg) throws Exception {
+    default void intercept(IMessage msg) throws Exception {
         int varSize = this.getClass().getAnnotation(Modifier.class).varSize();
         List<IWord> content = msg.getContent().get();
         if (!check(content, varSize)) { return; }
@@ -38,7 +38,7 @@ public interface ChannelSelector extends Interceptor {
     // abstract
     Channel channel();
 
-    void resolve(Message msg, List<IWord> var) throws Exception;
+    void resolve(IMessage msg, List<IWord> var) throws Exception;
 
     @Target(ElementType.TYPE)
     @Retention(RetentionPolicy.RUNTIME)

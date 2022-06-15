@@ -1,6 +1,6 @@
 package com.github.anthropoworphous.chatthingy.msg.elements;
 
-import com.github.anthropoworphous.chatthingy.msg.Message;
+import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
 import com.github.anthropoworphous.chatthingy.util.ColorCodeDecoder;
 import com.github.anthropoworphous.chatthingy.util.ComponentStringConverter;
 import net.kyori.adventure.text.Component;
@@ -17,7 +17,7 @@ public class ElementProcessor {
     public State getState(IElement e) { return getWorks(e).state(); }
 
     // process prefixTrigger
-    public final void preprocess(Message msg, IElement[] elements, IElement e) {
+    public final void preprocess(IMessage msg, IElement[] elements, IElement e) {
         if (getState(e) == State.PENDING) {
             getWorks(e).state(State.PROCESSING);
 
@@ -28,10 +28,10 @@ public class ElementProcessor {
             throw new IllegalStateException("Preprocess formed a loop");
         }
     }
-    public final String strPostprocess(String result, Message msg, IElement e) {
+    public final String strPostprocess(String result, IMessage msg, IElement e) {
         return getWorks(e).postprocess().runStr(msg, result, e);
     }
-    public final Component compPostprocess(Component result, Message msg, IElement e) {
+    public final Component compPostprocess(Component result, IMessage msg, IElement e) {
         return Component.text().append(getWorks(e).postprocess().runComp(msg, result, e)).build().compact();
     }
 
@@ -98,7 +98,7 @@ public class ElementProcessor {
     }
 
     // process registering method
-    private void addPreprocess(IElement e, BiPredicate<Message, IElement[]> process) {
+    private void addPreprocess(IElement e, BiPredicate<IMessage, IElement[]> process) {
         getWorks(e).preprocess().add(process);
     }
     private void addStrPostprocess(IElement e, ElementPostprocess.PostProcess<String> process) {
@@ -182,12 +182,12 @@ public class ElementProcessor {
     }
 
     private static class ElementPreprocess {
-        private final Set<BiPredicate<Message, IElement[]>> processes = new HashSet<>();
+        private final Set<BiPredicate<IMessage, IElement[]>> processes = new HashSet<>();
 
-        public void add(BiPredicate<Message, IElement[]> p) {
+        public void add(BiPredicate<IMessage, IElement[]> p) {
             processes.add(p);
         }
-        private boolean test(Message msg, IElement[] elements) {
+        private boolean test(IMessage msg, IElement[] elements) {
             return processes.stream().allMatch(p -> p.test(msg, elements));
         }
     }
@@ -201,13 +201,13 @@ public class ElementProcessor {
         public void addCompPostprocess(PostProcess<Component> p) {
             compPostprocessors.add(p);
         }
-        private String runStr(Message msg, String result, IElement element) {
+        private String runStr(IMessage msg, String result, IElement element) {
             for (PostProcess<String> p : strPostprocessors) {
                 result = p.process(result, msg, element);
             }
             return result;
         }
-        private Component runComp(Message msg, Component result, IElement element) {
+        private Component runComp(IMessage msg, Component result, IElement element) {
             for (PostProcess<Component> p : compPostprocessors) {
                 result = p.process(result, msg, element);
             }
@@ -216,7 +216,7 @@ public class ElementProcessor {
 
         @FunctionalInterface
         public interface PostProcess<T> {
-            T process(T source, Message msg, IElement element);
+            T process(T source, IMessage msg, IElement element);
         }
     }
 }

@@ -7,7 +7,10 @@ import org.bukkit.Bukkit;
 
 import java.io.*;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 public class PersistentCache<K extends Serializable, V extends Serializable> implements CacheFacade<K, V> {

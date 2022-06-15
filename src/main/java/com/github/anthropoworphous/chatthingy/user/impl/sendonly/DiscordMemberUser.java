@@ -1,7 +1,7 @@
 package com.github.anthropoworphous.chatthingy.user.impl.sendonly;
 
 import com.github.anthropoworphous.chatthingy.msg.Button;
-import com.github.anthropoworphous.chatthingy.msg.Message;
+import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
 import com.github.anthropoworphous.chatthingy.user.User;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Role;
@@ -47,7 +47,7 @@ public class DiscordMemberUser extends User<Object> {
     @Override
     protected void accept(Object content) {}
     @Override
-    protected Object read(Message message) { return null; }
+    protected Object read(IMessage message) { return null; }
     @Override
     protected Object error(Exception e) { return null; }
     @Override

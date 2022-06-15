@@ -2,16 +2,14 @@ package com.github.anthropoworphous.chatthingy.event.external.discord;
 
 import com.github.anthropoworphous.chatthingy.data.key.StringKey;
 import com.github.anthropoworphous.chatthingy.hook.DiscordHook;
-import com.github.anthropoworphous.chatthingy.msg.Message;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.SendTask;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.formatter.AutoCaps;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.formatter.ExpendSlang;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.limiter.SpamFilter;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.target_selector.impl.SendToPrivateChat;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.target_selector.impl.SendToStaffChat;
+import com.github.anthropoworphous.chatthingy.msg.interceptor.formatter.AutoCaps;
+import com.github.anthropoworphous.chatthingy.msg.interceptor.formatter.ExpendSlang;
+import com.github.anthropoworphous.chatthingy.msg.interceptor.limiter.SpamFilter;
+import com.github.anthropoworphous.chatthingy.msg.interceptor.target_selector.impl.SendToPrivateChat;
+import com.github.anthropoworphous.chatthingy.msg.interceptor.target_selector.impl.SendToStaffChat;
+import com.github.anthropoworphous.chatthingy.msg.message.Message;
 import com.github.anthropoworphous.chatthingy.user.ReaderCollector;
 import com.github.anthropoworphous.chatthingy.user.User;
-import com.github.anthropoworphous.chatthingy.user.group.OnlinePlayerReaders;
 import com.github.anthropoworphous.chatthingy.user.impl.ConsoleUser;
 import com.github.anthropoworphous.chatthingy.user.impl.EmptyUser;
 import com.github.anthropoworphous.chatthingy.user.impl.sendonly.DiscordMemberUser;
@@ -54,22 +52,23 @@ public class MessageEvent implements DiscordEvent {
                 return Mono.empty();
             }
             DiscordHook.ChannelConfig config = DiscordHook.configOfChannel(channel.getId().toString());
-            String prefix = Optional.ofNullable(config).map(DiscordHook.ChannelConfig::messagePrefix).orElse("");
-            new SendTask(
-                    new Message(
-                            event.getMember()
-                                    .map(m -> (User<Object>) new DiscordMemberUser(channel, m))
-                                    .orElse(new EmptyUser()),
-                            "%s %s".formatted(prefix, event.getMessage().getContent()),
-                            new ReaderCollector(new OnlinePlayerReaders())
-                                    .with(new ConsoleUser())),
-                    new SendToPrivateChat(),
-                    new SendToStaffChat(),
-                    new ExpendSlang(),
-                    new AutoCaps(),
-                    new SpamFilter()
-            ).run();
-            return Mono.empty();
+            String prefix = Optional.ofNullable(config)
+                    .map(channelConfig -> channelConfig.messagePrefix() + " ")
+                    .orElse("");
+
+            return Mono.fromRunnable(new Message.Builder()
+                    .sendBy(event.getMember()
+                            .map(m -> (User<Object>) new DiscordMemberUser(channel, m))
+                            .orElse(new EmptyUser()))
+                    .content(prefix + event.getMessage().getContent())
+                    .readBy(new ReaderCollector(new ConsoleUser()))
+                    .interceptors(new SendToPrivateChat(),
+                            new SendToStaffChat(),
+                            new ExpendSlang(),
+                            new AutoCaps(),
+                            new SpamFilter())
+                    .build().task()
+            );
         }).subscribe();
     }
 }

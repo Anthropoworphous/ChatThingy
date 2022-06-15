@@ -1,11 +1,11 @@
 package com.github.anthropoworphous.chatthingy.cmd.minecraft;
 
-import com.github.anthropoworphous.chatthingy.msg.Message;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.SendTask;
+import com.github.anthropoworphous.chatthingy.msg.message.Message;
 import com.github.anthropoworphous.chatthingy.user.ReaderCollector;
 import com.github.anthropoworphous.chatthingy.user.User;
 import com.github.anthropoworphous.chatthingy.user.group.OnlinePlayerReaders;
 import com.github.anthropoworphous.chatthingy.user.impl.ConsoleUser;
+import com.github.anthropoworphous.chatthingy.user.impl.EmptyUser;
 import com.github.anthropoworphous.chatthingy.user.impl.PlayerUser;
 import com.github.anthropoworphous.cmdlib.command.CMD;
 import org.bukkit.Bukkit;
@@ -28,16 +28,13 @@ public class ClearChat implements CMD {
 
                     User<String> consoleUser = new ConsoleUser();
 
-                    new SendTask(
-                            new Message(
-                                    consoleUser,
-                                    "Chat cleared by " + (commandSender instanceof Player
-                                            ? new PlayerUser((Player) commandSender).name().orElse("???")
-                                            : consoleUser.name().orElseThrow()),
-                                    new ReaderCollector(new OnlinePlayerReaders())
-                            )
-                    ).run();
-
+                    new Message.Builder()
+                            .sendBy(new EmptyUser())
+                            .content("Chat cleared by " + (commandSender instanceof Player
+                                    ? new PlayerUser((Player) commandSender).name().orElse("???")
+                                    : consoleUser.name().orElseThrow()))
+                            .readBy(new ReaderCollector(new OnlinePlayerReaders()))
+                            .build().task().run();
                     return true;
                 }
         );

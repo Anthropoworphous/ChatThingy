@@ -1,6 +1,6 @@
 package com.github.anthropoworphous.chatthingy.task;
 
 @FunctionalInterface
-public interface Task {
+public interface Task extends Runnable {
     void run();
 }

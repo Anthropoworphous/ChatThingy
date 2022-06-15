@@ -1,12 +1,12 @@
-package com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.formatter;
+package com.github.anthropoworphous.chatthingy.msg.interceptor.formatter;
 
-import com.github.anthropoworphous.chatthingy.msg.Message;
+import com.github.anthropoworphous.chatthingy.msg.interceptor.Interceptor;
+import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
 import com.github.anthropoworphous.chatthingy.msg.word.IWord;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.Interceptor;
 
 public class AutoCaps implements Interceptor {
     @Override
-    public void intercept(Message msg) {
+    public void intercept(IMessage msg) {
         msg.getContent().opGet().ifPresent(list -> {
             for (int i = 0; i < list.size(); i++) {
                 IWord word = list.get(i);

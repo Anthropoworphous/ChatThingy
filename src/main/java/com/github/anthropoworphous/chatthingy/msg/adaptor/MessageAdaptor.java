@@ -1,8 +1,8 @@
 package com.github.anthropoworphous.chatthingy.msg.adaptor;
 
-import com.github.anthropoworphous.chatthingy.msg.Message;
 import com.github.anthropoworphous.chatthingy.msg.elements.ElementProcessor;
 import com.github.anthropoworphous.chatthingy.msg.elements.IElement;
+import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
 import com.github.anthropoworphous.chatthingy.util.ComponentMerger;
 import net.kyori.adventure.text.Component;
 
@@ -11,13 +11,13 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-public class MsgAdaptor {
-    public MsgAdaptor(Message msg) {
+public class MessageAdaptor {
+    public MessageAdaptor(IMessage msg) {
         this.msg = msg;
         ep = new ElementProcessor();
     }
 
-    private final Message msg;
+    private final IMessage msg;
     private final ElementProcessor ep;
 
     private IElement[] formatInit(IElement[] format) {

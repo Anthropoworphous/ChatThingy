@@ -1,9 +1,9 @@
-package com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor;
+package com.github.anthropoworphous.chatthingy.msg.interceptor;
 
-import com.github.anthropoworphous.chatthingy.msg.Message;
+import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
 
 public interface Interceptor {
-    void intercept(Message msg) throws Exception;
+    void intercept(IMessage msg) throws Exception;
 
     default String interceptorName() {
         return this.getClass()

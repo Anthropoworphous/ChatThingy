@@ -1,10 +1,10 @@
-package com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.target_selector.impl;
+package com.github.anthropoworphous.chatthingy.msg.interceptor.target_selector.impl;
 
 import com.github.anthropoworphous.chatthingy.channel.Channel;
 import com.github.anthropoworphous.chatthingy.channel.impl.minecraft.Private;
-import com.github.anthropoworphous.chatthingy.msg.Message;
+import com.github.anthropoworphous.chatthingy.msg.interceptor.target_selector.ChannelSelector;
+import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
 import com.github.anthropoworphous.chatthingy.msg.word.IWord;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.target_selector.ChannelSelector;
 import com.github.anthropoworphous.chatthingy.user.impl.PlayerUser;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -20,7 +20,7 @@ public class SendToPrivateChat implements ChannelSelector {
     }
 
     @Override
-    public void resolve(Message msg, List<IWord> var) throws Exception {
+    public void resolve(IMessage msg, List<IWord> var) throws Exception {
         Player p = Optional.ofNullable(Bukkit.getPlayerExact(var.get(0).text()))
                 .orElseThrow(() -> new Exception(
                         "Player %s not found".formatted(var.get(0).text())

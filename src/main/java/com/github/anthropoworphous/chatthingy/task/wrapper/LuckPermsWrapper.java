@@ -1,7 +1,6 @@
-package com.github.anthropoworphous.chatthingy.task.impl.msg.wrapper.impl;
+package com.github.anthropoworphous.chatthingy.task.wrapper;
 
-import com.github.anthropoworphous.chatthingy.msg.Message;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.wrapper.Wrapper;
+import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
 import com.github.anthropoworphous.chatthingy.user.extend.LuckPermUser;
 import com.github.anthropoworphous.chatthingy.user.impl.PlayerUser;
 import net.luckperms.api.LuckPerms;
@@ -13,7 +12,7 @@ import java.util.Optional;
 
 public class LuckPermsWrapper implements Wrapper {
     @Override
-    public void wrap(Message msg) {
+    public void wrap(IMessage msg) {
         Optional.ofNullable(Bukkit.getServicesManager().getRegistration(LuckPerms.class)).ifPresent(lp -> {
             LuckPerms api = lp.getProvider();
             if (msg.sender() instanceof PlayerUser) {

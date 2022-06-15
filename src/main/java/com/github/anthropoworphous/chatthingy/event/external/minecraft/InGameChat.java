@@ -1,13 +1,12 @@
 package com.github.anthropoworphous.chatthingy.event.external.minecraft;
 
 import com.github.anthropoworphous.chatthingy.event.Event;
-import com.github.anthropoworphous.chatthingy.msg.Message;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.SendTask;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.formatter.ExpendSlang;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.limiter.SpamFilter;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.minecraft.HighLightMCName;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.target_selector.impl.SendToPrivateChat;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.target_selector.impl.SendToStaffChat;
+import com.github.anthropoworphous.chatthingy.msg.interceptor.formatter.ExpendSlang;
+import com.github.anthropoworphous.chatthingy.msg.interceptor.limiter.SpamFilter;
+import com.github.anthropoworphous.chatthingy.msg.interceptor.minecraft.HighLightMCName;
+import com.github.anthropoworphous.chatthingy.msg.interceptor.target_selector.impl.SendToPrivateChat;
+import com.github.anthropoworphous.chatthingy.msg.interceptor.target_selector.impl.SendToStaffChat;
+import com.github.anthropoworphous.chatthingy.msg.message.Message;
 import com.github.anthropoworphous.chatthingy.user.ReaderCollector;
 import com.github.anthropoworphous.chatthingy.user.group.LinkedDiscordChannels;
 import com.github.anthropoworphous.chatthingy.user.group.OnlinePlayerReaders;
@@ -35,20 +34,18 @@ public class InGameChat implements Listener, Event {
         // getChannelConfig out of here old minecraft chat
         event.setCancelled(true);
 
-        new SendTask(
-                new Message(
-                        new PlayerUser(event.getPlayer()),
-                        event.message(),
-                        new ReaderCollector(new OnlinePlayerReaders())
-                                .with(new ConsoleUser())
-                                .withAllOf(new LinkedDiscordChannels())
-                ),
-                new SendToPrivateChat(),
-                new SendToStaffChat(),
-                new HighLightMCName(),
-                new ExpendSlang(),
-                new SpamFilter()
-        ).run();
+        new Message.Builder()
+                .sendBy(new PlayerUser(event.getPlayer()))
+                .content(event.message())
+                .readBy(new ReaderCollector(new OnlinePlayerReaders())
+                        .with(new ConsoleUser())
+                        .withAllOf(new LinkedDiscordChannels()))
+                .interceptors(new SendToPrivateChat(),
+                        new SendToStaffChat(),
+                        new HighLightMCName(),
+                        new ExpendSlang(),
+                        new SpamFilter())
+                .build().task().run();
     }
 
     @Override

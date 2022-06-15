@@ -1,7 +1,7 @@
 package com.github.anthropoworphous.chatthingy.user.impl;
 
 import com.github.anthropoworphous.chatthingy.msg.Button;
-import com.github.anthropoworphous.chatthingy.msg.Message;
+import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
 import com.github.anthropoworphous.chatthingy.user.User;
 
 import java.util.List;
@@ -18,7 +18,7 @@ public class EmptyUser extends User<Object> {
     protected void accept(Object content) { }
 
     @Override
-    protected Object read(Message message) {
+    protected Object read(IMessage message) {
         return null;
     }
 

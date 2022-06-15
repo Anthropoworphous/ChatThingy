@@ -1,6 +1,6 @@
 package com.github.anthropoworphous.chatthingy.msg.elements;
 
-import com.github.anthropoworphous.chatthingy.msg.Message;
+import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
 import net.kyori.adventure.text.Component;
 
 import java.util.Optional;
@@ -15,7 +15,7 @@ public abstract class Element implements IElement {
     }
 
     @Override
-    public final Optional<String> getAsString(Message msg, ElementProcessor ep) {
+    public final Optional<String> getAsString(IMessage msg, ElementProcessor ep) {
         if (ep.getState(this) != State.SUCCESS) {
             return Optional.empty();
         }
@@ -23,7 +23,7 @@ public abstract class Element implements IElement {
     }
 
     @Override
-    public final Optional<Component> getAsComponent(Message msg, ElementProcessor ep) {
+    public final Optional<Component> getAsComponent(IMessage msg, ElementProcessor ep) {
         if (ep.getState(this) != State.SUCCESS) {
             return Optional.empty();
         }

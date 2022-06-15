@@ -1,7 +1,7 @@
 package com.github.anthropoworphous.chatthingy.user;
 
 import com.github.anthropoworphous.chatthingy.msg.Button;
-import com.github.anthropoworphous.chatthingy.msg.Message;
+import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +15,7 @@ public abstract class User<T> {
     }
 
     // accept content
-    public final void accept(Message message) {
+    public final void accept(IMessage message) {
         accept(read(message));
     }
     public final void accept(Exception exception) {
@@ -26,7 +26,7 @@ public abstract class User<T> {
     }
 
     protected abstract void accept(T content);
-    protected abstract T read(Message message);
+    protected abstract T read(IMessage message);
     protected abstract T error(Exception e);
     protected abstract T acceptButton(List<Button> buttons);
 

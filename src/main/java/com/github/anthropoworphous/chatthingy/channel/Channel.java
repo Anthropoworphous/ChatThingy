@@ -1,17 +1,20 @@
 package com.github.anthropoworphous.chatthingy.channel;
 
-import com.github.anthropoworphous.chatthingy.data.config.Configured;
-import com.github.anthropoworphous.chatthingy.msg.Message;
+import com.github.anthropoworphous.chatthingy.data.config.BukkitConfiguration;
+import com.github.anthropoworphous.chatthingy.data.config.Configuration;
+import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
+import org.ini4j.Ini;
 
 import java.io.File;
 import java.util.Optional;
 
-public abstract class Channel extends Configured {
+public abstract class Channel {
+    private final Configuration config = generateConfig();
     public String channelName() {
         return getClass().getSimpleName();
     }
 
-    public void apply(Message msg) throws Exception {
+    public void apply(IMessage msg) throws Exception {
         msg.channel(this);
 
         if (!sendPerm().equals("null") && !msg.sender().checkPermission(sendPerm())) {
@@ -27,24 +30,23 @@ public abstract class Channel extends Configured {
         }
     }
 
+    public Configuration generateConfig() {
+        return new BukkitConfiguration.Builder()
+                .name(getClass().getSimpleName())
+                .folder(f -> new File(f, "channels"))
+                .defaultIniCreator(this::defaultIni)
+                .build();
+    }
+
     public String readPerm() {
-        return get("permission", "readPerm");
+        return config.get("permission", "readPerm");
     }
     public String sendPerm() {
-        return get("permission", "sendPerm");
+        return config.get("permission", "sendPerm");
     }
 
-    @Override
-    protected String configFileName() {
-        return getClass().getSimpleName();
-    }
-
-    @Override
-    protected File configFolder() {
-        return new File(CONFIG_FOLDER, "channels");
-    }
+    protected abstract Ini defaultIni();
 
     public abstract Optional<String> name();
-
     public abstract Optional<String> prefixTrigger();
 }

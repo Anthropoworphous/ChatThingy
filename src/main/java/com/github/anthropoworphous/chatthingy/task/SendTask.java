@@ -1,22 +1,19 @@
-package com.github.anthropoworphous.chatthingy.task.impl.msg;
+package com.github.anthropoworphous.chatthingy.task;
 
-import com.github.anthropoworphous.chatthingy.msg.Message;
-import com.github.anthropoworphous.chatthingy.task.Task;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.HaltMessage;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.Interceptor;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.wrapper.Wrapper;
-import org.bukkit.Bukkit;
+import com.github.anthropoworphous.chatthingy.msg.interceptor.HaltMessage;
+import com.github.anthropoworphous.chatthingy.msg.interceptor.Interceptor;
+import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
+import com.github.anthropoworphous.chatthingy.task.wrapper.Wrapper;
 
 public class SendTask implements Task {
-    public SendTask(Message msg, Interceptor... interceptors) {
-        msg.provideReference(this);
+    public SendTask(IMessage msg, Interceptor... interceptors) {
         this.msg = msg;
         this.interceptors = interceptors;
 
         Wrapper.wrapping(this);
     }
 
-    private final Message msg;
+    private final IMessage msg;
     private final Interceptor[] interceptors; // TODO turn interceptor into config controlled instead of hard coded
 
     public Interceptor[] interceptors() {

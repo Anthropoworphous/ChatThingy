@@ -1,10 +1,10 @@
 package com.github.anthropoworphous.chatthingy.user.impl;
 
 import com.github.anthropoworphous.chatthingy.msg.Button;
-import com.github.anthropoworphous.chatthingy.msg.Message;
-import com.github.anthropoworphous.chatthingy.msg.adaptor.MsgAdaptor;
+import com.github.anthropoworphous.chatthingy.msg.adaptor.MessageAdaptor;
 import com.github.anthropoworphous.chatthingy.msg.elements.Elements;
 import com.github.anthropoworphous.chatthingy.msg.elements.IElement;
+import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
 import com.github.anthropoworphous.chatthingy.user.User;
 import org.bukkit.Bukkit;
 
@@ -24,8 +24,8 @@ public class ConsoleUser extends User<String> {
     }
 
     @Override
-    public String read(Message msg) {
-        return new MsgAdaptor(msg).readString(ep -> new IElement[]{
+    public String read(IMessage msg) {
+        return new MessageAdaptor(msg).readString(ep -> new IElement[]{
                 ep.lookAhead(Elements.openBracket()),
                 Elements.channelName(),
                 ep.lookBehind(Elements.closeBracket()),

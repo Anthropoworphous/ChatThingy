@@ -1,10 +1,10 @@
-package com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.target_selector.impl;
+package com.github.anthropoworphous.chatthingy.msg.interceptor.target_selector.impl;
 
-import com.github.anthropoworphous.chatthingy.msg.Message;
 import com.github.anthropoworphous.chatthingy.channel.Channel;
 import com.github.anthropoworphous.chatthingy.channel.impl.minecraft.Staff;
+import com.github.anthropoworphous.chatthingy.msg.interceptor.target_selector.ChannelSelector;
+import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
 import com.github.anthropoworphous.chatthingy.msg.word.IWord;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.target_selector.ChannelSelector;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ public class SendToStaffChat implements ChannelSelector {
     }
 
     @Override
-    public void resolve(Message msg, List<IWord> var) throws Exception {
+    public void resolve(IMessage msg, List<IWord> var) throws Exception {
         channel().apply(msg);
     }
 }

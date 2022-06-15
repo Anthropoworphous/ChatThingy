@@ -1,7 +1,7 @@
-package com.github.anthropoworphous.chatthingy.task.impl.msg.wrapper;
+package com.github.anthropoworphous.chatthingy.task.wrapper;
 
-import com.github.anthropoworphous.chatthingy.msg.Message;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.SendTask;
+import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
+import com.github.anthropoworphous.chatthingy.task.SendTask;
 import com.github.anthropoworphous.chatthingy.user.User;
 
 import java.util.Set;
@@ -13,7 +13,7 @@ public interface Wrapper {
     static void wrapping(User<?> user) {
         wrappers.forEach(w -> w.wrap(user));
     }
-    static void wrapping(Message msg) {
+    static void wrapping(IMessage msg) {
         wrappers.forEach(w -> w.wrap(msg));
     }
     static void wrapping(SendTask sendTask) {
@@ -21,7 +21,7 @@ public interface Wrapper {
     }
 
     default void wrap(User<?> user) {}
-    default void wrap(Message msg) {}
+    default void wrap(IMessage msg) {}
     default void wrap(SendTask sendTask) {}
 
     default void register() {

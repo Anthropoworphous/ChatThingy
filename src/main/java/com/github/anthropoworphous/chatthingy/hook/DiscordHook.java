@@ -1,8 +1,9 @@
 package com.github.anthropoworphous.chatthingy.hook;
 
+import com.github.anthropoworphous.chatthingy.data.cache.Cache;
 import com.github.anthropoworphous.chatthingy.data.cache.ConcurrentCache;
 import com.github.anthropoworphous.chatthingy.data.cache.complex.PersistentCache;
-import com.github.anthropoworphous.chatthingy.data.config.Configured;
+import com.github.anthropoworphous.chatthingy.data.config.BukkitConfiguration;
 import com.github.anthropoworphous.chatthingy.data.key.StringKey;
 import com.github.anthropoworphous.chatthingy.event.external.discord.ButtonPressedEvent;
 import com.github.anthropoworphous.chatthingy.event.external.discord.CommandProcessor;
@@ -24,10 +25,19 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class DiscordHook extends Configured implements Hook {
-    private final Supplier<String> commandPrefix = () -> get("command", "prefix");
+public class DiscordHook implements Hook {
+    private static final BukkitConfiguration config = new BukkitConfiguration.Builder()
+            .name("discord")
+            .folder(f -> new File(f, "hooks"))
+            .defaultIniCreator(() -> {
+                Ini ini = new Ini();
+                ini.put("command", "prefix", "ct");
+                ini.put("connection", "token", "0".repeat(70));
+                return ini;
+            }).build();
+    private final Supplier<String> commandPrefix = () -> config.get("command", "prefix");
 
-    private static final PersistentCache<StringKey, ChannelConfig> connectedChannels = new PersistentCache<>(
+    private static final Cache<StringKey, ChannelConfig> connectedChannels = new PersistentCache<>(
             "ConnectedDiscordChannels", ConcurrentCache::new
     );
     private static Instant up = null; // for uptime
@@ -40,10 +50,10 @@ public class DiscordHook extends Configured implements Hook {
 
     @Override
     public void init() {
-        String strToken = get("connection", "token");
+        String strToken = config.get("connection", "token");
         if (strToken.equals("0".repeat(70))) {
             Bukkit.getLogger().info("You can set the token in %s to connect to discord channel through a bot"
-                    .formatted(configFolder().getAbsolutePath()));
+                    .formatted(config.folder().getAbsolutePath() + File.separator + config.name()));
             return;
         }
 
@@ -63,13 +73,12 @@ public class DiscordHook extends Configured implements Hook {
     }
 
     // resource getter and setter
-    public PersistentCache<StringKey, ChannelConfig> connectedChannels() {
+    public Cache<StringKey, ChannelConfig> connectedChannels() {
         return connectedChannels;
     }
     public String commandPrefix() { return commandPrefix.get(); }
     public void linkChannel(String id) {
-        var config = new ChannelConfig(id);
-        connectedChannels().put(new StringKey(id), config);
+        connectedChannels().computeIfAbsent(new StringKey(id), k -> new ChannelConfig(id));
     }
     public void unlinkChannel(String id) {
         connectedChannels().remove(new StringKey(id));
@@ -90,56 +99,27 @@ public class DiscordHook extends Configured implements Hook {
         return "Not up yet";
     }
 
-    // configuration
-    @Override
-    protected String configFileName() {
-        return "discord";
-    }
-
-    @Override
-    protected File configFolder() {
-        return new File(CONFIG_FOLDER, "hooks");
-    }
-
-    @Override
-    protected Ini defaultIni() {
-        Ini ini = new Ini();
-        ini.put("command", "prefix", "ct");
-        ini.put("connection", "token", "0".repeat(70));
-        return ini;
-    }
-
     // individual channel config
-    public static class ChannelConfig extends Configured implements Serializable {
-        private final String id;
+    public static class ChannelConfig implements Serializable {
+        private transient final BukkitConfiguration config;
+
         public ChannelConfig(@NotNull String channelId) {
-            id = channelId;
-            reload();
+            config = new BukkitConfiguration.Builder()
+                    .name(channelId)
+                    .folder(f -> new File(f, "hooks%schannels".formatted(File.separator)))
+                    .defaultIniCreator(() -> {
+                        Ini ini = new Ini();
+                        ini.putComment("data", "permission: separate permissions with \",\", this is the permission this channel will have");
+                        ini.putComment("data", "message prefix: this will get added before the message");
+                        ini.put("data", "permission", "example.perm_1,example.perm_2");
+                        ini.put("data", "message prefix", "");
+                        return ini;
+                    }).build();
         }
 
         public boolean checkPerm(String node) {
-            return Arrays.asList(get("data", "permission").split(",")).contains(node);
+            return Arrays.asList(config.get("data", "permission").split(",")).contains(node);
         }
-        public String messagePrefix() { return get("data", "message prefix"); }
-
-        @Override
-        protected String configFileName() {
-            return id;
-        }
-
-        @Override
-        protected File configFolder() {
-            return new File(CONFIG_FOLDER, "hooks%schannels".formatted(File.separator));
-        }
-
-        @Override
-        protected Ini defaultIni() {
-            Ini ini = new Ini();
-            ini.putComment("data", "permission: separate permissions with \",\", this is the permission this channel will have");
-            ini.putComment("data", "message prefix: this will get added before the message");
-            ini.put("data", "permission", "example.perm_1,example.perm_2");
-            ini.put("data", "message prefix", "");
-            return ini;
-        }
+        public String messagePrefix() { return config.get("data", "message prefix"); }
     }
 }

@@ -1,6 +1,6 @@
 package com.github.anthropoworphous.chatthingy.msg.elements;
 
-import com.github.anthropoworphous.chatthingy.msg.Message;
+import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.Style;
 
@@ -23,9 +23,9 @@ public interface IElement {
     Optional<Style> style();
     void style(Style style);
 
-    Optional<Component> getComp(Message msg);
-    Optional<String> getStr(Message msg);
+    Optional<Component> getComp(IMessage msg);
+    Optional<String> getStr(IMessage msg);
 
-    Optional<String> getAsString(Message msg, ElementProcessor ep);
-    Optional<Component> getAsComponent(Message msg, ElementProcessor ep);
+    Optional<String> getAsString(IMessage msg, ElementProcessor ep);
+    Optional<Component> getAsComponent(IMessage msg, ElementProcessor ep);
 }

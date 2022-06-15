@@ -1,6 +1,6 @@
 package com.github.anthropoworphous.chatthingy.msg.elements;
 
-import com.github.anthropoworphous.chatthingy.msg.Message;
+import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
 import com.github.anthropoworphous.chatthingy.msg.word.IWord;
 import com.github.anthropoworphous.chatthingy.util.ComponentMerger;
 import net.kyori.adventure.text.Component;
@@ -25,7 +25,7 @@ public class Elements {
         }
 
         @Override
-        public Optional<Component> getComp(Message msg) {
+        public Optional<Component> getComp(IMessage msg) {
             return getStr(msg).map(str -> Component.text(str)
                             .style(this.style().orElse(Style.empty())));
         }
@@ -40,7 +40,7 @@ public class Elements {
     public static IElement space() {
         return new Base() {
             @Override
-            public Optional<String> getStr(Message msg) {
+            public Optional<String> getStr(IMessage msg) {
                 return Optional.of(" ");
             }
         };
@@ -51,7 +51,7 @@ public class Elements {
     public static IElement openBracket() {
         return new Base() {
             @Override
-            public Optional<String> getStr(Message msg) {
+            public Optional<String> getStr(IMessage msg) {
                 return Optional.of("[");
             }
         };
@@ -62,7 +62,7 @@ public class Elements {
     public static IElement closeBracket() {
         return new Base() {
             @Override
-            public Optional<String> getStr(Message msg) {
+            public Optional<String> getStr(IMessage msg) {
                 return Optional.of("]");
             }
         };
@@ -73,7 +73,7 @@ public class Elements {
     public static IElement messageIndicator() {
         return new Base() {
             @Override
-            public Optional<String> getStr(Message msg) {
+            public Optional<String> getStr(IMessage msg) {
                 return Optional.of(": ");
             }
         };
@@ -84,7 +84,7 @@ public class Elements {
     public static IElement timestamp() {
         return new Base() {
             @Override
-            public Optional<String> getStr(Message msg) {
+            public Optional<String> getStr(IMessage msg) {
                 return Optional.of(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
             }
         };
@@ -99,7 +99,7 @@ public class Elements {
     public static IElement channelName() {
         return new Base() {
             @Override
-            public Optional<String> getStr(Message msg) {
+            public Optional<String> getStr(IMessage msg) {
                 return msg.channel().name();
             }
         };
@@ -115,7 +115,7 @@ public class Elements {
     public static IElement senderPrefix() {
         return new Base() {
             @Override
-            public Optional<String> getStr(Message msg) {
+            public Optional<String> getStr(IMessage msg) {
                 return msg.sender().prefix();
             }
         };
@@ -126,7 +126,7 @@ public class Elements {
     public static IElement senderName() {
         return new Base() {
             @Override
-            public Optional<String> getStr(Message msg) {
+            public Optional<String> getStr(IMessage msg) {
                 return msg.sender().name();
             }
         };
@@ -137,11 +137,11 @@ public class Elements {
     public static IElement message() {
         return new Base() {
             @Override
-            public Optional<String> getStr(Message msg) {
+            public Optional<String> getStr(IMessage msg) {
                 return msg.getContent().opGet().map(l -> String.join(" ", l.stream().map(IWord::text).toList()));
             }
             @Override
-            public Optional<Component> getComp(Message msg) {
+            public Optional<Component> getComp(IMessage msg) {
                 return msg.getContent().opGet()
                         .map(list -> ComponentMerger.merge(list.stream().map(IWord::component).toList(), " "));
             }

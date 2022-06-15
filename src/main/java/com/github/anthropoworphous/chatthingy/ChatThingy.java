@@ -5,7 +5,7 @@ import com.github.anthropoworphous.chatthingy.cmd.minecraft.ClickButton;
 import com.github.anthropoworphous.chatthingy.cmd.minecraft.Debug;
 import com.github.anthropoworphous.chatthingy.cmd.minecraft.ReloadConfig;
 import com.github.anthropoworphous.chatthingy.data.cache.complex.PersistentCache;
-import com.github.anthropoworphous.chatthingy.data.config.Configured;
+import com.github.anthropoworphous.chatthingy.data.config.Configuration;
 import com.github.anthropoworphous.chatthingy.event.external.minecraft.ConsoleSayCommand;
 import com.github.anthropoworphous.chatthingy.event.external.minecraft.InGameChat;
 import com.github.anthropoworphous.chatthingy.event.external.minecraft.PlayerJoinLeave;
@@ -25,7 +25,7 @@ public class ChatThingy extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        Configured.reloadAll();
+        Configuration.reloadAll();
 
         // the stuff that might or might not load that aren't required
         new DiscordHook().init();
@@ -39,12 +39,21 @@ public class ChatThingy extends JavaPlugin {
         CMDRegister.registerCMD(new ClickButton(), this);
         CMDRegister.registerCMD(new Debug(), this);
         CMDRegister.registerCMD(new ReloadConfig(), this);
-
-        Configured.reloadAll();
     }
 
     @Override
     public void onDisable() {
         PersistentCache.saveAll();
+    }
+
+    public enum Permissions {
+        IGNORE_SPAM_FILTER("spam_ignore");
+
+        private static final String NODE_START = "chat_thingy";
+        public final String node;
+
+        Permissions(String permissionNode) {
+            node = "%s.%s".formatted(NODE_START, permissionNode);
+        }
     }
 }

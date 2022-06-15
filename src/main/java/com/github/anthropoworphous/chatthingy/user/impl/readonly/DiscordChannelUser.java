@@ -2,10 +2,10 @@ package com.github.anthropoworphous.chatthingy.user.impl.readonly;
 
 import com.github.anthropoworphous.chatthingy.hook.DiscordHook;
 import com.github.anthropoworphous.chatthingy.msg.Button;
-import com.github.anthropoworphous.chatthingy.msg.Message;
-import com.github.anthropoworphous.chatthingy.msg.adaptor.MsgAdaptor;
+import com.github.anthropoworphous.chatthingy.msg.adaptor.MessageAdaptor;
 import com.github.anthropoworphous.chatthingy.msg.elements.Elements;
 import com.github.anthropoworphous.chatthingy.msg.elements.IElement;
+import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
 import com.github.anthropoworphous.chatthingy.user.User;
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.component.ActionRow;
@@ -39,13 +39,13 @@ public class DiscordChannelUser extends User<MultipartRequest<MessageCreateReque
     }
 
     @Override
-    public MultipartRequest<MessageCreateRequest> read(Message message) {
+    public MultipartRequest<MessageCreateRequest> read(IMessage message) {
         Optional<String> name = message.sender().name();
         return MessageCreateSpec.builder()
                 .addEmbed(EmbedCreateSpec.builder()
                         .author(message.sender().name().orElse("Anonymous"), null,
                                 "https://mc-heads.net/avatar/%s".formatted(message.sender().id()))
-                        .description(new MsgAdaptor(message)
+                        .description(new MessageAdaptor(message)
                                 .readString(ep -> new IElement[] {Elements.message()})
                         ).build()
                 ).build().asRequest();

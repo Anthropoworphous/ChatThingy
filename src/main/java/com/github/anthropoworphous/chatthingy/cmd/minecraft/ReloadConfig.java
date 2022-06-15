@@ -1,6 +1,6 @@
 package com.github.anthropoworphous.chatthingy.cmd.minecraft;
 
-import com.github.anthropoworphous.chatthingy.data.config.Configured;
+import com.github.anthropoworphous.chatthingy.data.config.Configuration;
 import com.github.anthropoworphous.cmdlib.command.CMD;
 
 import java.util.List;
@@ -11,7 +11,7 @@ public class ReloadConfig implements CMD {
     public List<Route> routes() {
         return Routes.singleNoArg(
                 (commandSender, list) -> {
-                    Configured.reloadAll();
+                    Configuration.reloadAll();
                     return true;
                 }
         );

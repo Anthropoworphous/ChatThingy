@@ -1,10 +1,9 @@
 package com.github.anthropoworphous.chatthingy.event.external.minecraft;
 
 import com.github.anthropoworphous.chatthingy.event.Event;
-import com.github.anthropoworphous.chatthingy.msg.Message;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.SendTask;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.target_selector.impl.SendToPrivateChat;
-import com.github.anthropoworphous.chatthingy.task.impl.msg.interceptor.target_selector.impl.SendToStaffChat;
+import com.github.anthropoworphous.chatthingy.msg.interceptor.target_selector.impl.SendToPrivateChat;
+import com.github.anthropoworphous.chatthingy.msg.interceptor.target_selector.impl.SendToStaffChat;
+import com.github.anthropoworphous.chatthingy.msg.message.Message;
 import com.github.anthropoworphous.chatthingy.user.ReaderCollector;
 import com.github.anthropoworphous.chatthingy.user.User;
 import com.github.anthropoworphous.chatthingy.user.group.LinkedDiscordChannels;
@@ -22,17 +21,16 @@ public class ConsoleSayCommand implements Listener, Event {
 
         User<String> consoleUser = new ConsoleUser();
 
-        new SendTask(
-                new Message(
-                        consoleUser,
-                        event.getCommand().substring(4), // skip the "/say "
-                        new ReaderCollector(new OnlinePlayerReaders())
-                                .with(consoleUser)
-                                .withAllOf(new LinkedDiscordChannels())
-                ),
-                new SendToPrivateChat(),
-                new SendToStaffChat()
-        ).run();
+        new Message.Builder()
+                .sendBy(consoleUser)
+                .content(event.getCommand().substring(4)) // skip the "/say "
+                .readBy(new ReaderCollector(new OnlinePlayerReaders())
+                        .with(consoleUser)
+                        .withAllOf(new LinkedDiscordChannels()))
+                .interceptors(
+                        new SendToPrivateChat(),
+                        new SendToStaffChat())
+                .build().task().run();
     }
 
     @Override
