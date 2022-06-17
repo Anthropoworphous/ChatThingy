@@ -6,7 +6,7 @@ import com.github.anthropoworphous.chatthingy.data.cache.complex.PersistentCache
 import com.github.anthropoworphous.chatthingy.data.config.BukkitConfiguration;
 import com.github.anthropoworphous.chatthingy.data.key.StringKey;
 import com.github.anthropoworphous.chatthingy.event.external.discord.ButtonPressedEvent;
-import com.github.anthropoworphous.chatthingy.event.external.discord.CommandProcessor;
+import com.github.anthropoworphous.chatthingy.cmd.discord.CommandProcessor;
 import com.github.anthropoworphous.chatthingy.event.external.discord.MessageEvent;
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
@@ -44,9 +44,7 @@ public class DiscordHook implements Hook {
     private static GatewayDiscordClient client = null;
 
     @Override
-    public String hookName() {
-        return "discord-hook";
-    }
+    public String hookName() { return "discord-hook"; }
 
     @Override
     public void init() {
@@ -59,23 +57,22 @@ public class DiscordHook implements Hook {
 
         // try to connect to discord.
         try {
-            DiscordClient.create(strToken).login().doOnSuccess(client -> {
-                // Setting the uptime, setting the client, and initializing the events.
-                up = new Date().toInstant();
-                DiscordHook.client = client;
-                new CommandProcessor().init(client);
-                new MessageEvent(this).init(client);
-                new ButtonPressedEvent().init(client);
-            }).subscribe();
+            DiscordClient.create(strToken).login()
+                    .doOnSuccess(client -> {
+                        // Setting the uptime, setting the client, and initializing the events.
+                        up = new Date().toInstant();
+                        DiscordHook.client = client;
+                        new CommandProcessor().init(client);
+                        new MessageEvent(this).init(client);
+                        new ButtonPressedEvent().init(client);
+                    }).subscribe();
         } catch(Exception e) {
             Bukkit.getLogger().info("Failed to connect to discord: %s".formatted(e.getMessage()));
         }
     }
 
     // resource getter and setter
-    public Cache<StringKey, ChannelConfig> connectedChannels() {
-        return connectedChannels;
-    }
+    public Cache<StringKey, ChannelConfig> connectedChannels() { return connectedChannels; }
     public String commandPrefix() { return commandPrefix.get(); }
     public void linkChannel(String id) {
         connectedChannels().computeIfAbsent(new StringKey(id), k -> new ChannelConfig(id));

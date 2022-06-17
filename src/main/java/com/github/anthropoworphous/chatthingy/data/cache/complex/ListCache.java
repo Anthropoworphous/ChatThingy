@@ -24,9 +24,7 @@ public class ListCache<K, V, L extends Collection<V>> implements CacheFacade<K, 
         cache.cache(key, k -> listSupplier.get()).add(value);
         regulateSize();
     }
-    public Collection<V> cache(K key) {
-        return cache(key, k -> listSupplier.get());
-    }
+    public Collection<V> cache(K key) { return cache(key, k -> listSupplier.get()); }
     public Optional<Entry<K, L>> largest() {
         int max = 0;
         Entry<K, L> largest = null;
@@ -41,14 +39,10 @@ public class ListCache<K, V, L extends Collection<V>> implements CacheFacade<K, 
     }
 
     @SuppressWarnings("uncheck")
-    public static <K, V, L extends Collection<V>> ListCache<K, V, L> from(Cache<K, L> c) {
-        return (ListCache<K, V, L>) c;
-    }
+    public static <K, V, L extends Collection<V>> ListCache<K, V, L> from(Cache<K, L> c) { return (ListCache<K, V, L>) c; }
 
     @Override
-    public Cache<K, L> cache() {
-        return cache;
-    }
+    public Cache<K, L> cache() { return cache; }
 
     @Override
     public K removedTarget() {

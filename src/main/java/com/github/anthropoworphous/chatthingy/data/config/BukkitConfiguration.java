@@ -3,6 +3,7 @@ package com.github.anthropoworphous.chatthingy.data.config;
 import com.github.anthropoworphous.chatthingy.ChatThingy;
 import com.github.anthropoworphous.chatthingy.data.cache.RandomCache;
 import com.github.anthropoworphous.chatthingy.data.cache.complex.MapCache;
+import com.github.anthropoworphous.chatthingy.error.handling.throwable.ThrowableBiFunction;
 import org.bukkit.Bukkit;
 import org.ini4j.Ini;
 
@@ -36,13 +37,9 @@ public class BukkitConfiguration implements Configuration {
 
     // get value
     @Override
-    public File folder() {
-        return folder;
-    }
+    public File folder() { return folder; }
     @Override
-    public String name() {
-        return name;
-    }
+    public String name() { return name; }
 
     @Override
     public String get(String section, String key) {
@@ -52,6 +49,26 @@ public class BukkitConfiguration implements Configuration {
     @SuppressWarnings("unchecked")
     public <T> T parse(String section, String key, BiFunction<String, String, T> mapper) {
         return (T) cache.cacheNested(section, key, mapper::apply);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T parseOrIfFailed(
+            String section,
+            String key,
+            ThrowableBiFunction<String, String, T> mapper,
+            T backupValue
+    ) {
+        T obj = (T) cache.getNested(section, key);
+        if (obj != null && obj != backupValue) {
+            try {
+                obj = mapper.map(section, key).orElse(backupValue);
+            } catch(Exception e) {
+                obj = backupValue;
+            }
+            cache.putNested(section, key, obj);
+        }
+        return obj;
     }
 
     // other

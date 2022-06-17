@@ -29,7 +29,7 @@ public class ClearChat implements CMD {
                     User<String> consoleUser = new ConsoleUser();
 
                     new Message.Builder()
-                            .sendBy(new EmptyUser())
+                            .sendBy(new EmptyUser<>())
                             .content("Chat cleared by " + (commandSender instanceof Player
                                     ? new PlayerUser((Player) commandSender).name().orElse("???")
                                     : consoleUser.name().orElseThrow()))
@@ -41,12 +41,8 @@ public class ClearChat implements CMD {
     }
 
     @Override
-    public String name() {
-        return "clear-chat";
-    }
+    public String name() { return "clear-chat"; }
 
     @Override
-    public Optional<String> permission() {
-        return Optional.of("chat_thingy.clear_chat");
-    }
+    public Optional<String> permission() { return Optional.of("chat_thingy.clear_chat"); }
 }

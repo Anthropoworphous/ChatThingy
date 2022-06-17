@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ComponentSpliter {
+public class ComponentSplitter {
     public static List<Component> split(Component comp) {
         List<Component> result = new ArrayList<>();
         flatten(comp).forEach(c -> {

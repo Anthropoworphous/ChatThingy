@@ -5,9 +5,7 @@ import org.bukkit.Bukkit;
 
 public class LuckPermsHook implements Hook {
     @Override
-    public String hookName() {
-        return "luckperms-hook";
-    }
+    public String hookName() { return "luckperms-hook"; }
 
     public void init() {
         if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {

@@ -4,7 +4,7 @@ import com.github.anthropoworphous.chatthingy.user.impl.EmptyUser;
 
 import java.util.Optional;
 
-public class NamedEmptyUser extends EmptyUser {
+public class NamedEmptyUser<T> extends EmptyUser<T> {
     private final String name;
 
     public NamedEmptyUser(String name) {

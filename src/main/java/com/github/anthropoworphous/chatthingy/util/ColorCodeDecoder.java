@@ -78,9 +78,7 @@ public class ColorCodeDecoder {
 
         public static TextColor get(Character c) {
             for (ColorCode ccc : ColorCode.values()) {
-                if (ccc.c == c) {
-                    return ccc.color;
-                }
+                if (ccc.c == c) { return ccc.color; }
             }
             return NamedTextColor.WHITE;
         }
@@ -102,9 +100,7 @@ public class ColorCodeDecoder {
 
         public static TextDecoration get(Character c) {
             for (StyleCode ccc : StyleCode.values()) {
-                if (ccc.c == c) {
-                    return ccc.decoration;
-                }
+                if (ccc.c == c) { return ccc.decoration; }
             }
             return TextDecoration.ITALIC; //impossible
         }

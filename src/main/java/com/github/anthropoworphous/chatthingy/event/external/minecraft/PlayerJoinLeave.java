@@ -36,7 +36,7 @@ public class PlayerJoinLeave implements Listener, Event {
         event.joinMessage(null);
 
         new Message.Builder()
-                .sendBy(new EmptyUser())
+                .sendBy(new EmptyUser<>())
                 .content(ColorCodeDecoder.decode(config.get("text", "join-message")
                                 .replaceAll("<p>", event.getPlayer().getName())))
                 .readBy(new ReaderCollector(new OnlinePlayerReaders())
@@ -49,7 +49,7 @@ public class PlayerJoinLeave implements Listener, Event {
         event.quitMessage(null);
 
         new Message.Builder()
-                .sendBy(new EmptyUser())
+                .sendBy(new EmptyUser<>())
                 .content(ColorCodeDecoder.decode(config.get("text", "leave-message")
                         .replaceAll("<p>", event.getPlayer().getName())))
                 .readBy(new ReaderCollector(new OnlinePlayerReaders())

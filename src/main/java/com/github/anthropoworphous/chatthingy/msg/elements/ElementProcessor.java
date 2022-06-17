@@ -163,18 +163,10 @@ public class ElementProcessor {
             this.e = e;
         }
 
-        public IElement e() {
-            return e;
-        }
-        public ElementPreprocess preprocess() {
-            return preprocess;
-        }
-        public ElementPostprocess postprocess() {
-            return postprocess;
-        }
-        public State state() {
-            return state;
-        }
+        public IElement e() { return e; }
+        public ElementPreprocess preprocess() { return preprocess; }
+        public ElementPostprocess postprocess() { return postprocess; }
+        public State state() { return state; }
 
         public void state(State state) {
             this.state = state;

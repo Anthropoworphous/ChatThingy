@@ -37,6 +37,7 @@ public abstract class User<T> {
 
     // user's general descriptions
     public String id() { return id; }
+    public String pfpUrl() { return "https://mc-heads.net/avatar/%s".formatted(id()); }
     public Optional<String> name() { return Optional.empty(); }
 
     // user's detail descriptions

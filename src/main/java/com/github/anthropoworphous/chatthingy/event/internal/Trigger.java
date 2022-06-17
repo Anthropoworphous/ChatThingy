@@ -7,9 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public record Trigger(String trigger) {
-    public static TriggerBuilder thatIs() {
-        return new TriggerBuilder();
-    }
+    public static TriggerBuilder thatIs() { return new TriggerBuilder(); }
 
     public static class TriggerBuilder {
         private final Map<Integer, String> triggerComponents = new HashMap<>();

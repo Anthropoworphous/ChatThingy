@@ -22,7 +22,5 @@ public class ClickButton implements CMD {
     }
 
     @Override
-    public String name() {
-        return "click-button";
-    }
+    public String name() { return "click-button"; }
 }

@@ -13,7 +13,6 @@ import com.github.anthropoworphous.chatthingy.hook.DiscordHook;
 import com.github.anthropoworphous.chatthingy.hook.LuckPermsHook;
 import com.github.anthropoworphous.cmdlib.processor.CMDRegister;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -21,10 +20,13 @@ import org.bukkit.plugin.java.JavaPlugin;
  * reinventing the wheel at its finest
  */
 public class ChatThingy extends JavaPlugin {
-    public static Plugin plugin() { return ChatThingy.getPlugin(ChatThingy.class); }
+    private static ChatThingy plugin = null;
+
+    public static ChatThingy plugin() { return plugin; }
 
     @Override
     public void onEnable() {
+        plugin = this;
         Configuration.reloadAll();
 
         // the stuff that might or might not load that aren't required

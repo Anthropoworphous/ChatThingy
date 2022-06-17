@@ -7,7 +7,7 @@ import com.github.anthropoworphous.chatthingy.msg.word.impl.ComponentWord;
 import com.github.anthropoworphous.chatthingy.user.ReaderCollector;
 import com.github.anthropoworphous.chatthingy.user.User;
 import com.github.anthropoworphous.chatthingy.user.impl.EmptyUser;
-import com.github.anthropoworphous.chatthingy.util.ComponentSpliter;
+import com.github.anthropoworphous.chatthingy.util.ComponentSplitter;
 import com.github.anthropoworphous.chatthingy.util.ComponentStringConverter;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +27,7 @@ public class Message extends AbstractMessage {
     public Message(User<?> sender, @NotNull Component content, List<User<?>> readers, Interceptor[] interceptors) {
         super(sender, readers,
                 ComponentStringConverter.convert(content),
-                ComponentSpliter.split(content).stream()
+                ComponentSplitter.split(content).stream()
                         .map(ComponentWord::new)
                         .toList(),
                 interceptors);
@@ -41,7 +41,7 @@ public class Message extends AbstractMessage {
 
     public static class Builder {
         private Interceptor[] interceptors = null;
-        private User<?> sender = new EmptyUser();
+        private User<?> sender = new EmptyUser<>();
         private List<IWord> wordsContent = null;
         private Component compContent = null;
         private String strContent = "";

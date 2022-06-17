@@ -12,7 +12,5 @@ public record TimeKey(Instant t) implements Key<TimeKey> {
     }
 
     @Override
-    public int compareTo(@NotNull TimeKey o) {
-        return t.compareTo(o.t);
-    }
+    public int compareTo(@NotNull TimeKey o) { return t.compareTo(o.t); }
 }

@@ -10,9 +10,7 @@ public interface AsyncEvent extends Event {
     Task task();
     Trigger trigger();
 
-    default Trigger await() {
-        return this.await(-1);
-    }
+    default Trigger await() { return this.await(-1); }
     default Trigger await(long timeout) {
         Trigger trigger = trigger();
         EventBus.add(trigger, task(), timeout);

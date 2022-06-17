@@ -5,10 +5,11 @@ import com.github.anthropoworphous.chatthingy.data.cache.RandomCache;
 import com.github.anthropoworphous.chatthingy.data.cache.SortedCache;
 import com.github.anthropoworphous.chatthingy.data.config.BukkitConfiguration;
 import com.github.anthropoworphous.chatthingy.data.config.Configuration;
+import com.github.anthropoworphous.chatthingy.log.Logger;
 import com.github.anthropoworphous.chatthingy.msg.interceptor.Interceptor;
 import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
 import com.github.anthropoworphous.chatthingy.user.User;
-import org.bukkit.Bukkit;
+import com.github.anthropoworphous.chatthingy.error.handling.throwable.Throwable;
 import org.ini4j.Ini;
 
 import java.io.File;
@@ -17,6 +18,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 public class SpamFilter extends Configuration.Configured implements Interceptor {
+    private static final Logger logger = new Logger();
     private static final int defaultThreshold = 1000;
     private static final int defaultCooldown = 3000;
     private static final SortedCache<Instant, SendRecord> timeRecords = new SortedCache<>(100);
@@ -24,11 +26,9 @@ public class SpamFilter extends Configuration.Configured implements Interceptor 
 
     @Override
     public void intercept(IMessage msg) throws Exception {
-        if (msg.sender().checkPermission(config().get("bypass", "permission"))) {
-            return;
-        }
+        if (msg.sender().checkPermission(config().get("bypass", "permission"))) { return; }
         SendRecord newSendRecord = new SendRecord(msg);
-        senderRecords.putIfAbsentOrPossibleErrorCompute(
+        senderRecords.putIfAbsentOrThrowableCompute(
                 msg.sender().id(),
                 newSendRecord,
                 (v, ec) -> {
@@ -55,27 +55,19 @@ public class SpamFilter extends Configuration.Configured implements Interceptor 
                 }).build();
     }
 
-    private class SendRecord {
-        private int score = getThreshold();
+    private static class SendRecord {
+        private int score;
         private final User<?> sender;
-        private String msg;
         private Instant time;
 
-        private SendRecord(IMessage msg) {
-            this.sender = msg.sender();
-            this.msg = msg.getContent().original();
-            this.time = new Date().toInstant();
+        public SendRecord(IMessage msg) {
+            sender = msg.sender();
+            time = new Date().toInstant();
+            score = getThreshold();
         }
 
-        public String msg() {
-            return msg;
-        }
-        public Instant time() {
-            return time;
-        }
-        public User<?> sender() {
-            return sender;
-        }
+        public Instant time() { return time; }
+        public User<?> sender() { return sender; }
 
         public void update(SendRecord newerRecord) throws Exception {
             int threshold;
@@ -86,12 +78,11 @@ public class SpamFilter extends Configuration.Configured implements Interceptor 
             } catch (NumberFormatException e) {
                 threshold = defaultThreshold;
                 cooldown = defaultCooldown;
-                Bukkit.getLogger().info("Invalid number format for SpamFilter's threshold");
+                logger.log("Invalid number format for SpamFilter's threshold");
             }
             int timeDiff = (int) Math.min(time.until(newerRecord.time(), ChronoUnit.MILLIS), Integer.MAX_VALUE);
             score = timeDiff > cooldown ? threshold : score - timeDiff;
             time = newerRecord.time;
-            msg = newerRecord.msg;
 
             if (this.score < 0) {
                 throw new Exception("You're sending messages too fast!");
@@ -99,10 +90,16 @@ public class SpamFilter extends Configuration.Configured implements Interceptor 
         }
 
         private int getThreshold() {
-            return config().parse("limit", "threshold", (k1, k2) -> Integer.parseInt(config().get(k1, k2)));
+            return new Throwable.Result<Integer>()
+                    .attempt(() -> Integer.parseInt(
+                            config().get("limit", "threshold")),
+                            defaultThreshold);
         }
         private int getCoolDownLimit() {
-            return config().parse("cool down", "for ms", (k1, k2) -> Integer.parseInt(config().get(k1, k2)));
+            return new Throwable.Result<Integer>()
+                    .attempt(() -> Integer.parseInt(
+                            config().get("cool down", "for ms")),
+                            defaultCooldown);
         }
     }
 }

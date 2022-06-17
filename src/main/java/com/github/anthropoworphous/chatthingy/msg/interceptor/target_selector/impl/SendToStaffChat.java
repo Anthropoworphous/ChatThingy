@@ -11,9 +11,7 @@ import java.util.List;
 @ChannelSelector.Modifier(varSize = 0)
 public class SendToStaffChat implements ChannelSelector {
     @Override
-    public Channel channel() {
-        return new Staff();
-    }
+    public Channel channel() { return new Staff(); }
 
     @Override
     public void resolve(IMessage msg, List<IWord> var) throws Exception {

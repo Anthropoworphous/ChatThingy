@@ -1,6 +1,6 @@
 package com.github.anthropoworphous.chatthingy.data.cache;
 
-import com.github.anthropoworphous.chatthingy.util.ThrowableFunction;
+import com.github.anthropoworphous.chatthingy.error.handling.throwable.ThrowableFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,13 +22,9 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
 
     // getter
     @Override
-    public Map<K, V> cache() {
-        return cache;
-    }
+    public Map<K, V> cache() { return cache; }
     @Override
-    public final int limit() {
-        return limit;
-    }
+    public final int limit() { return limit; }
 
     // setter
     @Override
@@ -38,20 +34,20 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
     }
 
     // from cache
-    public void possibleErrorCompute(K key, ThrowableFunction<V, V> mapper) throws Exception {
+    public void throwableCompute(K key, ThrowableFunction<V, V> mapper) throws Exception {
         if (cache().containsKey(key)) {
             put(key, mapper.map(cache().get(key)).orElseThrow());
         } else {
             throw new NullPointerException("No value associated with the key");
         }
     }
-    public void putIfAbsentOrPossibleErrorCompute(
+    public void putIfAbsentOrThrowableCompute(
             K key,
             V defaultValue,
             ThrowableFunction<V, V> mapper
     ) throws Exception {
         putIfAbsent(key, defaultValue);
-        possibleErrorCompute(key, mapper);
+        throwableCompute(key, mapper);
     }
 
     // facade below this point
@@ -86,9 +82,7 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
         regulateSize();
     }
     @Override
-    public V putIfAbsent(K key, V defaultValue) {
-        return cache.putIfAbsent(key, defaultValue);
-    }
+    public V putIfAbsent(K key, V defaultValue) { return cache.putIfAbsent(key, defaultValue); }
     @Override
     public V computeIfAbsent(K key, @NotNull Function<? super K, ? extends V> mapper) {
         return cache().computeIfAbsent(key, mapper);
@@ -105,20 +99,14 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
     }
 
     @Override
-    public boolean remove(Object key, Object value) {
-        return Cache.super.remove(key, value);
-    }
+    public boolean remove(Object key, Object value) { return Cache.super.remove(key, value); }
 
     @Override
-    public boolean replace(K key, V oldValue, V newValue) {
-        return Cache.super.replace(key, oldValue, newValue);
-    }
+    public boolean replace(K key, V oldValue, V newValue) { return Cache.super.replace(key, oldValue, newValue); }
 
     @Nullable
     @Override
-    public V replace(K key, V value) {
-        return Cache.super.replace(key, value);
-    }
+    public V replace(K key, V value) { return Cache.super.replace(key, value); }
 
     @Override
     public @Nullable V computeIfPresent(K key, @NotNull BiFunction<? super K, ? super V, ? extends V> remappingFunction) {

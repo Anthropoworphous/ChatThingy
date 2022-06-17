@@ -40,9 +40,7 @@ public class PersistentCache<K extends Serializable, V extends Serializable> imp
     }
 
     @Override
-    public Cache<K, V> cache() {
-        return cache;
-    }
+    public Cache<K, V> cache() { return cache; }
 
     private void save() {
         if (SAVE_LOCATION.toFile().mkdirs()) {

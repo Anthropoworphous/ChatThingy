@@ -1,4 +1,4 @@
-package com.github.anthropoworphous.chatthingy.msg.interceptor;
+package com.github.anthropoworphous.chatthingy.error;
 
 import com.github.anthropoworphous.chatthingy.task.Task;
 
@@ -9,7 +9,5 @@ public class HaltMessage extends RuntimeException {
         this.response = response;
     }
 
-    public Task response() {
-        return response;
-    }
+    public Task response() { return response; }
 }

@@ -5,7 +5,5 @@ import org.jetbrains.annotations.NotNull;
 
 public record IntKey(int i) implements Key<IntKey> {
     @Override
-    public int compareTo(@NotNull IntKey o) {
-        return i - o.i;
-    }
+    public int compareTo(@NotNull IntKey o) { return i - o.i; }
 }

@@ -26,9 +26,7 @@ public class ComponentWord implements IWord {
     }
 
     @Override
-    public Style style() {
-        return word.style();
-    }
+    public Style style() { return word.style(); }
 
     @Override
     public void style(Style style) {

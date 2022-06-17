@@ -72,12 +72,8 @@ public class PlayerUser extends User<Component> {
     }
 
     @Override
-    public boolean checkPermission(String node) {
-        return player.hasPermission(node);
-    }
+    public boolean checkPermission(String node) { return player.hasPermission(node); }
 
     @Override
-    public Optional<String> name() {
-        return Optional.of(player.getName());
-    }
+    public Optional<String> name() { return Optional.of(player.getName()); }
 }

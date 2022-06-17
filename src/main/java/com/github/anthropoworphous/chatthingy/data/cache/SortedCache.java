@@ -12,12 +12,8 @@ public class SortedCache<K extends Comparable<K>, T> extends AbstractCache<K, T>
     }
 
     @Override
-    public K removedTarget() {
-        return cache().lastKey();
-    }
+    public K removedTarget() { return cache().lastKey(); }
 
     @Override
-    public TreeMap<K, T> cache() {
-        return (TreeMap<K, T>) super.cache();
-    }
+    public TreeMap<K, T> cache() { return (TreeMap<K, T>) super.cache(); }
 }

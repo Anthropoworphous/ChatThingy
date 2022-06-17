@@ -24,12 +24,8 @@ public class MapCache<K, KK, VV> implements CacheFacade<K, Cache<KK, VV>> {
         this.mapper = mapper;
     }
 
-    public VV getNested(K key1, KK key2) {
-        return cache.cache(key1, mapper).get(key2);
-    }
-    public VV cacheNested(K key1, KK key2, BiFunction<K, KK, VV> value) {
-        return cache.cache(key1, mapper).get(key2);
-    }
+    public VV getNested(K key1, KK key2) { return cache.cache(key1, mapper).get(key2); }
+    public VV cacheNested(K key1, KK key2, BiFunction<K, KK, VV> value) { return cache.cache(key1, mapper).get(key2); }
     public @Nullable VV removeNested(K key1, KK key2) {
         return Optional.ofNullable(get(key1)).map(c -> c.remove(key2)).orElse(null);
     }
@@ -43,9 +39,7 @@ public class MapCache<K, KK, VV> implements CacheFacade<K, Cache<KK, VV>> {
     }
 
     @Override
-    public Cache<K, Cache<KK, VV>> cache() {
-        return cache;
-    }
+    public Cache<K, Cache<KK, VV>> cache() { return cache; }
 
     @Override
     public K removedTarget() {

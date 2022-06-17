@@ -45,7 +45,7 @@ public class ExpendSlang implements Interceptor {
     }
 
     private void chainAppend(List<IWord> words, int index, String... toAdd) {
-        words.remove(index++);
+        words.remove(index);
         for (String str : toAdd) {
             words.add(index++, new PureString(str));
         }

@@ -15,9 +15,7 @@ import java.util.Optional;
 @ChannelSelector.Modifier(varSize = 1)
 public class SendToPrivateChat implements ChannelSelector {
     @Override
-    public Channel channel() {
-        return new Private();
-    }
+    public Channel channel() { return new Private(); }
 
     @Override
     public void resolve(IMessage msg, List<IWord> var) throws Exception {

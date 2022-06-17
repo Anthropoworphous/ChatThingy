@@ -10,9 +10,7 @@ public abstract class Element implements IElement {
     private final UUID id = UUID.randomUUID();
 
     @Override
-    public UUID id() {
-        return id;
-    }
+    public UUID id() { return id; }
 
     @Override
     public final Optional<String> getAsString(IMessage msg, ElementProcessor ep) {

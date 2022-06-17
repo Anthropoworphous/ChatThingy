@@ -30,20 +30,14 @@ public class EventBus {
         }
     }
 
-    public static boolean exist(Trigger trigger) {
-        return bus.containsKey(trigger);
-    }
-    public static boolean exist(String trigger) {
-        return bus.containsKey(new Trigger(trigger));
-    }
+    public static boolean exist(Trigger trigger) { return bus.containsKey(trigger); }
+    public static boolean exist(String trigger) { return bus.containsKey(new Trigger(trigger)); }
 
     /**
      * READONLY
      * @return the eventbus' content
      */
-    public static Map<Trigger, Task> bus() {
-        return Collections.unmodifiableMap(bus);
-    }
+    public static Map<Trigger, Task> bus() { return Collections.unmodifiableMap(bus); }
 
     public static boolean trigger(Trigger trigger) {
         Optional<Task> task = Optional.ofNullable(bus.get(trigger));
@@ -58,9 +52,7 @@ public class EventBus {
             return false;
         }
     }
-    public static boolean trigger(String trigger) {
-        return trigger(new Trigger(trigger));
-    }
+    public static boolean trigger(String trigger) { return trigger(new Trigger(trigger)); }
 
     private static void link(AsyncEvent event, List<AsyncEvent> blacklist) {
         blacklist.add(event);

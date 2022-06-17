@@ -12,14 +12,10 @@ public interface CacheFacade<K, V> extends Cache<K, V> {
     Cache<K, V> cache();
 
     @Override
-    default V cache(K key, Function<K, V> mapper) {
-        return cache().cache(key, mapper);
-    }
+    default V cache(K key, Function<K, V> mapper) { return cache().cache(key, mapper); }
 
     @Override
-    default int limit() {
-        return cache().limit();
-    }
+    default int limit() { return cache().limit(); }
 
     @Override
     default void limit(int limit) {
@@ -27,40 +23,26 @@ public interface CacheFacade<K, V> extends Cache<K, V> {
     }
 
     @Override
-    default K removedTarget() {
-        return cache().removedTarget();
-    }
+    default K removedTarget() { return cache().removedTarget(); }
 
     @Override
-    default int size() {
-        return cache().size();
-    }
+    default int size() { return cache().size(); }
 
     @Override
-    default boolean isEmpty() {
-        return cache().isEmpty();
-    }
+    default boolean isEmpty() { return cache().isEmpty(); }
 
     @Override
-    default boolean containsKey(Object key) {
-        return cache().containsKey(key);
-    }
+    default boolean containsKey(Object key) { return cache().containsKey(key); }
 
     @Override
-    default boolean containsValue(Object value) {
-        return cache().containsValue(value);
-    }
+    default boolean containsValue(Object value) { return cache().containsValue(value); }
 
     @Override
-    default V get(Object key) {
-        return cache().get(key);
-    }
+    default V get(Object key) { return cache().get(key); }
 
     @Nullable
     @Override
-    default V put(K key, V value) {
-        return cache().put(key, value);
-    }
+    default V put(K key, V value) { return cache().put(key, value); }
 
     @Override
     default V remove(Object key) {

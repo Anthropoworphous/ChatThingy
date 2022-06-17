@@ -1,6 +1,6 @@
 package com.github.anthropoworphous.chatthingy.task;
 
-import com.github.anthropoworphous.chatthingy.msg.interceptor.HaltMessage;
+import com.github.anthropoworphous.chatthingy.error.HaltMessage;
 import com.github.anthropoworphous.chatthingy.msg.interceptor.Interceptor;
 import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
 import com.github.anthropoworphous.chatthingy.task.wrapper.Wrapper;
@@ -16,9 +16,7 @@ public class SendTask implements Task {
     private final IMessage msg;
     private final Interceptor[] interceptors; // TODO turn interceptor into config controlled instead of hard coded
 
-    public Interceptor[] interceptors() {
-        return interceptors;
-    }
+    public Interceptor[] interceptors() { return interceptors; }
 
     @Override
     public void run() {

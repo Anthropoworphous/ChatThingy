@@ -1,6 +1,8 @@
 package com.github.anthropoworphous.chatthingy.user.impl.readonly;
 
+import com.github.anthropoworphous.chatthingy.error.handling.ExceptionHandler;
 import com.github.anthropoworphous.chatthingy.hook.DiscordHook;
+import com.github.anthropoworphous.chatthingy.log.Logger;
 import com.github.anthropoworphous.chatthingy.msg.Button;
 import com.github.anthropoworphous.chatthingy.msg.adaptor.MessageAdaptor;
 import com.github.anthropoworphous.chatthingy.msg.elements.Elements;
@@ -12,9 +14,8 @@ import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.entity.channel.Channel;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.MessageCreateSpec;
-import discord4j.discordjson.json.MessageCreateRequest;
-import discord4j.rest.util.MultipartRequest;
 
+import java.io.*;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,7 @@ import java.util.Optional;
 /**
  * It's not individual user but a channel because how the chat works
  */
-public class DiscordChannelUser extends User<MultipartRequest<MessageCreateRequest>> {
+public class DiscordChannelUser extends User<MessageCreateSpec.Builder> {
     private final Channel channel;
 
     public DiscordChannelUser(String channelId) {
@@ -32,32 +33,47 @@ public class DiscordChannelUser extends User<MultipartRequest<MessageCreateReque
                         .block(Duration.ofSeconds(10)))
                 .orElse(null);
     }
-
-    @Override
-    protected void accept(MultipartRequest<MessageCreateRequest> content) {
-        Optional.ofNullable(channel).ifPresent(c -> c.getRestChannel().createMessage(content).subscribe());
+    public DiscordChannelUser(Channel channel) {
+        super(channel.getId().asString());
+        this.channel = channel;
     }
 
     @Override
-    public MultipartRequest<MessageCreateRequest> read(IMessage message) {
-        Optional<String> name = message.sender().name();
+    protected void accept(MessageCreateSpec.Builder content) {
+        Optional.ofNullable(channel)
+                .ifPresent(c -> c.getRestChannel()
+                        .createMessage(content.build().asRequest())
+                        .subscribe());
+    }
+
+    @Override
+    public MessageCreateSpec.Builder read(IMessage message) {
         return MessageCreateSpec.builder()
                 .addEmbed(EmbedCreateSpec.builder()
-                        .author(message.sender().name().orElse("Anonymous"), null,
-                                "https://mc-heads.net/avatar/%s".formatted(message.sender().id()))
+                        .author(message.sender().name().orElse("Anonymous"), null, message.sender().pfpUrl())
                         .description(new MessageAdaptor(message)
                                 .readString(ep -> new IElement[] {Elements.message()})
-                        ).build()
-                ).build().asRequest();
+                        ).build());
     }
 
     @Override
-    public MultipartRequest<MessageCreateRequest> error(Exception e) {
-        return MessageCreateSpec.create().withContent(e.toString()).asRequest();
+    public MessageCreateSpec.Builder error(Exception e) {
+        try (StringWriter sw = new StringWriter()) {
+            new ExceptionHandler(new Logger(sw), new ExceptionHandler.StackTraceCutter()).handle(e);
+            return MessageCreateSpec.builder()
+                    .addEmbed(EmbedCreateSpec.builder()
+                            .author("Error", null, "https://mc-heads.net/avatar/false")
+                            .addField(e.toString(), "Damn...", false)
+                            .build())
+                    .addFile("error.txt", new ByteArrayInputStream(sw.toString().getBytes()))
+                    .content(e.toString());
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     @Override
-    public MultipartRequest<MessageCreateRequest> acceptButton(List<Button> buttons) {
+    public MessageCreateSpec.Builder acceptButton(List<Button> buttons) {
         return MessageCreateSpec.builder()
                 .content("Received buttons:")
                 .addComponent(ActionRow.of(
@@ -66,7 +82,7 @@ public class DiscordChannelUser extends User<MultipartRequest<MessageCreateReque
                                     b.trigger().trigger(),
                                     b.name()
                             )).toList()
-                )).build().asRequest();
+                ));
     }
 
     @Override

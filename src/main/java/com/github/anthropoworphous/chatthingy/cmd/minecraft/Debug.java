@@ -61,9 +61,7 @@ public class Debug implements CMD {
     }
 
     @Override
-    public @NotNull String name() {
-        return "debug";
-    }
+    public @NotNull String name() { return "debug"; }
 
     @Override
     public Optional<String> permission() {

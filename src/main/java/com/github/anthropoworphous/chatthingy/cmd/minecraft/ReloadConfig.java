@@ -18,12 +18,8 @@ public class ReloadConfig implements CMD {
     }
 
     @Override
-    public String name() {
-        return "reload-config";
-    }
+    public String name() { return "reload-config"; }
 
     @Override
-    public Optional<String> permission() {
-        return Optional.of("chat_thingy.reload_config");
-    }
+    public Optional<String> permission() { return Optional.of("chat_thingy.reload_config"); }
 }

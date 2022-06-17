@@ -1,18 +1,20 @@
 package com.github.anthropoworphous.chatthingy.user.impl;
 
+import com.github.anthropoworphous.chatthingy.log.Logger;
 import com.github.anthropoworphous.chatthingy.msg.Button;
 import com.github.anthropoworphous.chatthingy.msg.adaptor.MessageAdaptor;
 import com.github.anthropoworphous.chatthingy.msg.elements.Elements;
 import com.github.anthropoworphous.chatthingy.msg.elements.IElement;
 import com.github.anthropoworphous.chatthingy.msg.message.IMessage;
 import com.github.anthropoworphous.chatthingy.user.User;
-import org.bukkit.Bukkit;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public class ConsoleUser extends User<String> {
+    private static final Logger logger = new Logger();
+
     private static final String id = UUID.randomUUID().toString();
     public ConsoleUser() {
         super(id);
@@ -20,12 +22,13 @@ public class ConsoleUser extends User<String> {
 
     @Override
     protected void accept(String content) {
-        Bukkit.getLogger().info(content);
+        if (content == null) { return; }
+        logger.log(content);
     }
 
     @Override
-    public String read(IMessage msg) {
-        return new MessageAdaptor(msg).readString(ep -> new IElement[]{
+    public String read(IMessage message) {
+        return new MessageAdaptor(message).readString(ep -> new IElement[]{
                 ep.lookAhead(Elements.openBracket()),
                 Elements.channelName(),
                 ep.lookBehind(Elements.closeBracket()),
@@ -39,7 +42,8 @@ public class ConsoleUser extends User<String> {
 
     @Override
     public String error(Exception e) {
-        return e.toString();
+        e.printStackTrace();
+        return null;
     }
 
     @Override
@@ -62,23 +66,19 @@ public class ConsoleUser extends User<String> {
         return true;
     }
 
-    @Override
-    public Optional<String> name() {
+    @Override public String pfpUrl() {
+        return "https://mc-heads.net/avatar/console";
+    }
+    @Override public Optional<String> name() {
         return Optional.of("console");
     }
-
-    @Override
-    public Optional<String> prefix() {
+    @Override public Optional<String> prefix() {
         return Optional.of("Console");
     }
-
-    @Override
-    public Optional<List<String>> bio() {
+    @Override public Optional<List<String>> bio() {
         return Optional.of(List.of("Logging ip since 1690"));
     }
-
-    @Override
-    public Optional<List<String>> descriptions() {
+    @Override public Optional<List<String>> descriptions() {
         return Optional.of(List.of("Just a console"));
     }
 }
